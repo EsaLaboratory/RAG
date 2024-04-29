@@ -1,14 +1,11 @@
 # import librairies
 
-import keras
-import pathlib
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import requests
 from zipfile import ZipFile
 import pandas as pd
 import matplotlib.pyplot as plt
-import tqdm
 from typing import AsyncIterator, Iterator, Tuple, Optional, Union
 from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
@@ -22,7 +19,6 @@ from langchain.docstore.document import Document as LangchainDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline, AutoModelForCausalLM, Pipeline
-from ragatouille import RAGPretrainedModel
 import torch
 
 # Constants
@@ -55,7 +51,7 @@ class MyParser(BaseBlobParser):
 
 def extract_data(
     path: str = None,
-    test_html: bool = False,
+    test_html: bool = True,
     test_csv: bool = False,
 )-> list[LangchainDocument]:
     """Load data.
