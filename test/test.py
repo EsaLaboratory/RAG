@@ -1,9 +1,14 @@
 import unittest
+import sys
+# caution: path[0] is reserved for script path (or '' in REPL)
+sys.path.insert(1, '../rag/rag.py')
+from rag import extract_data
 
-class TestStringMethods(unittest.TestCase):
+class TestExtract(unittest.TestCase):
 
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
+    def test_extract(self):
+        doc = extract_data()
+        self.assertEqual('FOO', 'FOO')
 
     def test_isupper(self):
         self.assertTrue('FOO'.isupper())
