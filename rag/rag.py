@@ -84,8 +84,8 @@ def extract_data(
         ValueError: No url or path where given
     """
     if path is not None:
-        file_extension = pathlib.Path(path).suffix
-        print("File Extension: ", file_extension)
+        # file_extension = pathlib.Path(path).suffix
+        # print("File Extension: ", file_extension)
         loader = GenericLoader.from_filesystem(path=".", 
                                                glob="*.mdx", 
                                                show_progress=True, 
@@ -112,7 +112,7 @@ def extract_data(
 
         # Get data from links and convert to csv
         columns = "CET Time,UK Time (HH:MM),Area Code,Area Name,Unit Price (inc VAT)\n"
-        for link in tqdm(all_links[1:]):
+        for link in all_links[1:]:
             downloaded_data = urlopen(LINK + link['href'])
             with open(link['href'], 'w') as file:
                 file.write(columns)
@@ -125,9 +125,9 @@ def extract_data(
 
     elif test_csv:
         # Weather data
-        uri = "https://storage.googleapis.com/tensorflow/tf-keras-datasets/jena_climate_2009_2016.csv.zip"
-        zip_path = keras.utils.get_file(origin=uri, 
-                                        fname="jena_climate_2009_2016.csv.zip")
+        # uri = "https://storage.googleapis.com/tensorflow/tf-keras-datasets/jena_climate_2009_2016.csv.zip"
+        zip_path = None #keras.utils.get_file(origin=uri, 
+        #                                 fname="jena_climate_2009_2016.csv.zip")
         zip_file = ZipFile(zip_path)
         zip_file.extractall()
         path = "jena_climate_2009_2016.csv"
@@ -176,7 +176,7 @@ def split_documents(
     )
 
     docs_processed = []
-    for doc in tqdm(knowledge_base):
+    for doc in knowledge_base:
         docs_processed += text_splitter.split_documents([doc])
 
     # Remove duplicates
@@ -191,7 +191,7 @@ def split_documents(
         # Let's visualize the chunk sizes
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         lengths = []
-        for doc in tqdm(docs_processed):
+        for doc in docs_processed:
             lengths.append(len(tokenizer.encode(doc.page_content)))
         fig = pd.Series(lengths).hist()
         plt.title("Document lengths in the knowledge base in tokens")
@@ -359,27 +359,27 @@ def prompt_format(tokenizer: AutoTokenizer) -> Union[list[int], dict]:
 
 
 
-def init_reranker(name: Optional[str] = "colbert-ir/colbertv2.0"
-    ) -> RAGPretrainedModel:
-    """Initialize a reranker.
+# def init_reranker(name: Optional[str] = "colbert-ir/colbertv2.0"
+#     ) -> RAGPretrainedModel:
+#     """Initialize a reranker.
     
-    A reranker allow to retrieve more documents and to order them well.
-    Colbertv2 computes good interactions between query and documents.
+#     A reranker allow to retrieve more documents and to order them well.
+#     Colbertv2 computes good interactions between query and documents.
 
-    Args:
-        name: A string that refers to reranker model.
+#     Args:
+#         name: A string that refers to reranker model.
 
-    Returns:
-        A reranker object. 
-    """
-    return RAGPretrainedModel.from_pretrained(name)
+#     Returns:
+#         A reranker object. 
+#     """
+#     return RAGPretrainedModel.from_pretrained(name)
 
 def answer_with_rag(
     question: str,
     llm: Pipeline,
     knowledge_index: FAISS,
     rag_prompt_format: Union[list[int], dict],
-    reranker: Optional[RAGPretrainedModel] = None,
+    # reranker: Optional[RAGPretrainedModel] = None,
     num_retrieved_docs: int = 30,
     num_docs_final: int = 24,
 ) -> Tuple[str, list[LangchainDocument]]:

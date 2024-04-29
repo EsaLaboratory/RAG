@@ -4,11 +4,11 @@ import sys
 sys.path.insert(1, '../rag/rag.py')
 from rag import extract_data
 
-class TestExtract(unittest.TestCase):
-
+class TestRag(unittest.TestCase):
     def test_extract(self):
         doc = extract_data()
-        self.assertEqual('FOO', 'FOO')
+        self.assertTrue(doc is not None)
+        # TODO lots of test
 
     def test_isupper(self):
         self.assertTrue('FOO'.isupper())
