@@ -134,7 +134,8 @@ def extract_data(
 
     # Storing data into langchain format
     raw_knowledge_database = [
-        LangchainDocument(doc.page_content, doc.metadata) for doc in data
+        LangchainDocument(page_content=doc.page_content, metadata=doc.metadata)
+        for doc in data
     ]
     return raw_knowledge_database
 
