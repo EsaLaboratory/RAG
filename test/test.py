@@ -10,12 +10,13 @@ from rag import *
 
 def get_params():
     parser = argparse.ArgumentParser()
-    parser.add_argument('test_params', nargs=1)
+    parser.add_argument('--test_params', nargs=1)
+    print(sys.argv)
     parser.parse_args(sys.argv[1:])
     
     # Load the JSON data from your file
     with open('test_params.json') as json_file:
-        file = 'test' + parser.test_params
+        file = 'test' + parser.test_params[0]
         args = json.load(json_file)["testParameters"][file]
 
     # Describe test
