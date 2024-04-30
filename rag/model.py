@@ -2,7 +2,7 @@ import argparse
 from rag.rag import answer_with_rag, init_reranker, init_pipeline, load_faiss, prompt_format, init_embedding_model
 
 def main():
-    "Creation of the model command"
+    """Creation of the model command."""
     parser = argparse.ArgumentParser(
         description="Output an LLM's answer to a question on documents")
     parser.add_argument('--reranker', 
