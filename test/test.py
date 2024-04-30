@@ -18,7 +18,7 @@ with open('test' + args.test + '.json') as json_file:
 # Describe test
 print("\nTest with following parameters :\n")
 for key in test_args.keys():
-    print(f"--{key} : {test_args.key}\n")
+    print(f"--{key} : {test_args[key]}\n")
 class TestRag(unittest.TestCase):
     def __init__(self):
         self.doc = None
