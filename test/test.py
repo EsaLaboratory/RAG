@@ -6,7 +6,7 @@ import json
 
 sys.path.append(os.path.abspath("../rag/"))
 
-import rag
+from rag import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-ep', '--extractpath', help='extract path variable')
