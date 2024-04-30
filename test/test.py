@@ -21,6 +21,7 @@ for key in test_args.keys():
     print(f"{key} : {test_args[key]}\n")
 class TestRag(unittest.TestCase):
     def test_rag(self):
+        print("\nTest extract function")
         doc = extract_data(
                 path=test_args.path,
                 test_html=test_args.test_html,
@@ -28,6 +29,7 @@ class TestRag(unittest.TestCase):
                 )
         self.assertTrue(doc is not None)
 
+        print("\nTest split function")
         docs_processed_unique = split_documents(
                                 chunk_size=test_args.chunk_size,
                                 knowledge_base=doc,
@@ -37,6 +39,7 @@ class TestRag(unittest.TestCase):
                                 )
         self.assertTrue(docs_processed_unique is not None)
 
+        print("\nTest init_emmbedding function")
         embedding_model = init_embedding_model(
             embedding_model_name=test_args.embedding_model_name,
             multiprocess=test_args.multiprocess,
@@ -45,6 +48,7 @@ class TestRag(unittest.TestCase):
             )
         self.assertTrue(embedding_model is not None)
 
+        print("\nTest create faiss function")
         knowledge_database = create_faiss(
             embedding_model=embedding_model,
             docs_processed=docs_processed_unique,
@@ -52,12 +56,14 @@ class TestRag(unittest.TestCase):
         )
         self.assertTrue(knowledge_database is not None)
 
+        print("\nTest load faiss function")
         faiss = load_faiss(
             path=test_args.load_faiss_path,
             embedding_model=embedding_model
         )
         self.assertTrue(faiss is not None)
 
+        print("\nTest init pipeline function")
         llm = init_pipeline(
             model_path=test_args.model_path,
             tokenizer_path=test_args.tokenizer_path,
@@ -65,9 +71,11 @@ class TestRag(unittest.TestCase):
         )
         self.assertTrue(llm is not None)
 
+        print("\nTest prompt format function")
         rag_prompt_format = prompt_format(tokenizer=embedding_model)
         self.assertTrue(rag_prompt_format is not None)
 
+        print("\nTest answer with rag function")
         output = answer_with_rag(
         question=test_args.question,
         llm=llm,
