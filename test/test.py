@@ -8,11 +8,11 @@ sys.path.append(os.path.abspath("../rag/"))
 
 from rag import *
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--test', help='test params file')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--test', help='test params file')
+# args = parser.parse_args()
 # Load the JSON data from your file (replace 'your_file.json' with the actual filename)
-with open('test' + args.test + '.json') as json_file:
+with open('test' + '1' + '.json') as json_file:
     test_args = json.load(json_file)['testParameters']
 
 # Describe test
