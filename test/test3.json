@@ -1,0 +1,24 @@
+{
+    "testOwner": "François Michelon",
+    "testParameters": {
+        "extract_path": null,
+        "test_html": true,
+        "test_csv": null,
+        "chunk_size": 512,
+        "tokenizer_name": "thenlper/gte-small",
+        "plot": true,
+        "separators": null,
+        "embedding_model_name": "thenlper/gte-small",
+        "multiprocess": true,
+        "model_kwargs": {"device": "cpu"},
+        "encode_kwargs": {"normalize_embeddings": true},
+        "faiss_save_path": "../data/faiss/test1",
+        "load_faiss_path": "../data/faiss/test1",
+        "model_path": "HuggingFaceH4/zephyr-7b-beta",
+        "tokenizer_path": "HuggingFaceH4/zephyr-7b-beta",
+        "llm_save_path": "../data/model/test1",
+        "question": "What is the electircity price evolution in London?",
+        "num_retrieved_docs": 30,
+        "num_docs_final": 24
+    }
+}

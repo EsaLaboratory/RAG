@@ -17,7 +17,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
 from langchain.docstore.document import Document as LangchainDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline, AutoModelForCausalLM, Pipeline
 import torch
 
@@ -111,7 +111,8 @@ def extract_data(
             all_links.append({"href": href, "text": text})
 
         # Get data from links and convert to csv
-        columns = "CET Time,UK Time (HH:MM),Area Code,Area Name,Unit Price (inc VAT)\n"
+        columns = "CET Time,UK Time (HH:MM),Area Code,\
+                   Area Name,Unit Price (inc VAT)\n"
         for link in all_links[1:]:
             downloaded_data = urlopen(LINK + link['href'])
             with open("../data/" + link['href'], 'w') as file:
@@ -124,14 +125,7 @@ def extract_data(
         data = loader.load()
 
     elif test_csv:
-        # Weather data
-        # uri = "https://storage.googleapis.com/tensorflow/tf-keras-datasets/jena_climate_2009_2016.csv.zip"
-        zip_path = None #keras.utils.get_file(origin=uri, 
-        #                                 fname="jena_climate_2009_2016.csv.zip")
-        zip_file = ZipFile(zip_path)
-        zip_file.extractall()
-        path = "jena_climate_2009_2016.csv"
-        
+        path = "../data/jena_climate_2009_2016.csv"
         loader = CSVLoader(file_path=path)
         data = loader.load()
 
@@ -140,7 +134,7 @@ def extract_data(
 
     # Storing data into langchain format
     raw_knowledge_database = [
-        LangchainDocument(page_content=doc.page_content, metadata=doc.metadata) for doc in data
+        LangchainDocument(doc.page_content, doc.metadata) for doc in data
     ]
     return raw_knowledge_database
 
@@ -411,14 +405,14 @@ def answer_with_rag(
     relevant_docs = [doc.page_content for doc in relevant_docs]
 
     # Optionally rerank results
-    if reranker:
-        print("=> Reranking documents...")
-        relevant_docs = reranker.rerank(
-                        question, 
-                        relevant_docs, 
-                        k=num_docs_final
-                        )
-        relevant_docs = [doc["content"] for doc in relevant_docs]
+    # if reranker:
+    #     print("=> Reranking documents...")
+    #     relevant_docs = reranker.rerank(
+    #                     question, 
+    #                     relevant_docs, 
+    #                     k=num_docs_final
+    #                     )
+    #     relevant_docs = [doc["content"] for doc in relevant_docs]
 
     relevant_docs = relevant_docs[:num_docs_final]
 
