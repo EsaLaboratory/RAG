@@ -17,7 +17,7 @@
         "model_path": "HuggingFaceH4/zephyr-7b-beta",
         "tokenizer_path": "HuggingFaceH4/zephyr-7b-beta",
         "llm_save_path": "../data/model/test1",
-        "question": "What is the temperature evolution on this day 25.10.2010 in Kelvin?",
+        "question": "What is the electircity price evolution in London?",
         "num_retrieved_docs": 30,
         "num_docs_final": 24
     }
