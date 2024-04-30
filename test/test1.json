@@ -1,0 +1,21 @@
+{
+    "testOwner": "François Michelon",
+    "testParameters": {
+        "test_html": true,
+        "chunk_size": 512,
+        "tokenizer_name": "thenlper/gte-small",
+        "plot": true,
+        "embedding_model_name": "thenlper/gte-small",
+        "multiprocess": true,
+        "model_kwargs": "{'device': 'cpu'}",
+        "encode_kwargs": "{'normalize_embeddings': True}",
+        "faiss_save_path": "../data/faiss/test1",
+        "load_faiss_path": "../data/faiss/test1",
+        "model_path": "HuggingFaceH4/zephyr-7b-beta",
+        "tokenizer_path": "HuggingFaceH4/zephyr-7b-beta",
+        "llm_save_path": "../data/model/test1",
+        "question": "What is the temperature evolution on this day 25.10.2010 in Kelvin?",
+        "num_retrieved_docs": 30,
+        "num_docs_final": 24
+    }
+}

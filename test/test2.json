@@ -1,0 +1,24 @@
+{
+    "testOwner": "François Michelon",
+    "testParameters": {
+        "extract_path": "ADD",
+        "test_html": "ADD",
+        "test_csv": "ADD",
+        "chunk_size": "ADD",
+        "tokenizer_name": "ADD",
+        "plot": "ADD",
+        "separators": "ADD",
+        "embedding_model_name": "ADD",
+        "multiprocess": "ADD",
+        "model_kwargs": "ADD",
+        "encode_kwargs": "ADD",
+        "faiss_save_path": "ADD",
+        "load_faiss_path": "ADD",
+        "model_path": "ADD",
+        "tokenizer_path": "ADD",
+        "llm_save_path": "ADD",
+        "question": "ADD",
+        "num_retrieved_docs": "ADD",
+        "num_docs_final": "ADD"
+    }
+}
