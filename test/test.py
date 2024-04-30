@@ -13,16 +13,11 @@ parser.add_argument('--test', help='test params file')
 args = parser.parse_args()
 # Load the JSON data from your file (replace 'your_file.json' with the actual filename)
 with open('test' + args.test + '.json') as json_file:
-    json_data = json.load(json_file)
-
-# Extract the values from the JSON dictionary
-test_args = dict()
-for key in json_data['testParameters']:
-    test_args[key] = json_data['testParameters'][key]
+    test_args = json.load(json_file)['testParameters']
 
 # Describe test
 print("\nTest with following parameters :\n")
-for key in test_args.key:
+for key in test_args.keys():
     print(f"--{key} : {test_args.key}\n")
 class TestRag(unittest.TestCase):
     def __init__(self):
