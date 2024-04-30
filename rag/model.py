@@ -90,15 +90,15 @@ def main():
 
     reranker = init_reranker(name=reranker_name)
 
-    answer = answer_with_rag(question=question,
+    output = answer_with_rag(question=question,
                              llm=reader_llm,
                              knowledge_index=knowledge_database,
-                             rag_prompt_format=rag_prompt_format
+                             rag_prompt_format=rag_prompt_format,
                              reranker=reranker,
                              num_retrieved_docs=num_retrieved_docs,
                              num_docs_final=num_docs_final)
 
-    print(answer)
+    print(output)
 
 if __name__=="__main__":
     main()
