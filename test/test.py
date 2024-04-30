@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath("../rag/"))
 
 from rag import *
 
+# FIXME https://stackoverflow.com/questions/55259371/pytest-testing-parser-error-unrecognised-arguments
 # parser = argparse.ArgumentParser()
 # parser.add_argument('--test', help='test params file')
 # args = parser.parse_args()
@@ -23,7 +24,7 @@ class TestRag(unittest.TestCase):
     def test_rag(self):
         print("\nTest extract function")
         doc = extract_data(
-                path=test_args.path,
+                path=test_args.extract_path,
                 test_html=test_args.test_html,
                 test_csv=test_args.test_csv
                 )
