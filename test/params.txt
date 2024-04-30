@@ -1,0 +1,45 @@
+{
+    "testOwner": "François Michelon",
+    "tests": ["test1", "test2", "test3"],
+    "testParameters": {
+        "test1": {
+            "test_html": true,
+            "chunk_size": 512,
+            "tokenizer_name": "thenlper/gte-small",
+            "plot": true,
+            "embedding_model_name": "thenlper/gte-small",
+            "multiprocess": true,
+            "model_kwargs": "{'device': 'cpu'}",
+            "encode_kwargs": "{'normalize_embeddings': True}",
+            "faiss_save_path": "../data/faiss/test1",
+            "load_faiss_path": "../data/faiss/test1",
+            "model_path": "HuggingFaceH4/zephyr-7b-beta",
+            "tokenizer_path": "HuggingFaceH4/zephyr-7b-beta",
+            "llm_save_path": "../data/model/test1",
+            "question": "What is the temperature evolution on this day 25.10.2010 in Kelvin?",
+            "num_retrieved_docs": 30,
+            "num_docs_final": 24
+        },
+        "test2": {
+            "extract_path": "ADD",
+            "test_html": "ADD",
+            "test_csv": "ADD",
+            "chunk_size": "ADD",
+            "tokenizer_name": "ADD",
+            "plot": "ADD",
+            "separators": "ADD",
+            "embedding_model_name": "ADD",
+            "multiprocess": "ADD",
+            "model_kwargs": "ADD",
+            "encode_kwargs": "ADD",
+            "faiss_save_path": "ADD",
+            "load_faiss_path": "ADD",
+            "model_path": "ADD",
+            "tokenizer_path": "ADD",
+            "llm_save_path": "ADD",
+            "question": "ADD",
+            "num_retrieved_docs": "ADD",
+            "num_docs_final": "ADD"
+        }
+    }
+}

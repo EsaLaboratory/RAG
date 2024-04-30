@@ -1,0 +1,14 @@
+{
+    "testOwner": "my name",
+    "tests": ["test1", "test2", "test3"],
+    "testParameters": {
+        "test1": {
+            "param1": "0",
+            "param2": "20",
+            "param3": true
+        },
+        "test2": {
+            "param1": "cc"
+        }
+    }
+}
