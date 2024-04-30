@@ -1,9 +1,10 @@
 import unittest
 import sys
+import os
 import argparse
 import json
 
-sys.path.insert(1, '../rag/rag.py')
+sys.path.append(os.path.abspath("../rag/"))
 
 import rag
 
