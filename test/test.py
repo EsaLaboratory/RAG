@@ -9,12 +9,27 @@ sys.path.append(os.path.abspath("../rag/"))
 from rag import *
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-ep', '--extractpath', help='extract path variable')
-parser.add_argument('-h', '--html', help='html variable')
-parser.add_argument('-c', '--csv', help='csv variable')
+parser.add_argument('--extract_path', help='extract path variable')
+parser.add_argument('--test_html', help='html variable')
+parser.add_argument('--test_csv', help='csv variable')
+parser.add_argument('--chunk_size', help='chunk_size variable')
+parser.add_argument('--tokenizer_name', help='tokenizer_name variable')
+parser.add_argument('--plot', help='plot variable')
+parser.add_argument('--separators', help='separators variable')
+parser.add_argument('--embedding_model_name', help='embedding_model_name variable')
+parser.add_argument('--multiprocess', help='multiprocess variable')
+parser.add_argument('--model_kwargs', help='model_kwargs variable')
+parser.add_argument('--encode_kwargs', help='encode_kwargs variable')
+parser.add_argument('--faiss_save_path', help='faiss_save_path variable')
+parser.add_argument('--load_faiss_path', help='load_faiss_path variable')
+parser.add_argument('--embedding_model_name', help='embedding_model_name variable')
+parser.add_argument('--llm_save_path', help='llm_save_path variable')
+parser.add_argument('--question', help='question variable')
+parser.add_argument('--num_retrieved_docs', help='num_retrieved_docs variable')
+parser.add_argument('--num_docs_final', help='num_docs_final variable')
 
 # Load the JSON data from your file (replace 'your_file.json' with the actual filename)
-with open('your_file.json') as json_file:
+with open('params.json') as json_file:
     json_data = json.load(json_file)
 
 # Extract the values from the JSON dictionary
@@ -27,7 +42,7 @@ args = parser.parse_args(args_list)
 # Describe test
 print("\nTest with following parameters :\n")
 for key in args.key:
-    print(f"{key} : {args.key}\n")
+    print(f"--{key} : {args.key}\n")
 class TestRag(unittest.TestCase):
     def __init__(self):
         self.doc = None
@@ -40,7 +55,7 @@ class TestRag(unittest.TestCase):
         self.output = None
 
     def test_extract(self):
-        doc = rag.extract_data(
+        doc = extract_data(
                 path=args.path,
                 test_html=args.test_html,
                 test_csv=args.test_csv
@@ -49,7 +64,7 @@ class TestRag(unittest.TestCase):
         self.assertTrue(doc is not None)
 
     def test_split(self):
-        docs_processed_unique = rag.split_documents(
+        docs_processed_unique = split_documents(
                                     chunk_size=args.chunk_size,
                                     knowledge_base=self.doc,
                                     tokenizer_name=args.tokenizer_name,
@@ -60,7 +75,7 @@ class TestRag(unittest.TestCase):
         self.assertTrue(docs_processed_unique is not None)
 
     def test_init_embedding(self):
-        embedding_model = rag.init_embedding_model(
+        embedding_model = init_embedding_model(
             embedding_model_name=args.embedding_model_name,
             multiprocess=args.multiprocess,
             model_kwargs=args.model_kwargs,
@@ -70,7 +85,7 @@ class TestRag(unittest.TestCase):
         self.assertTrue(embedding_model is not None)
     
     def test_init_faiss(self, save_path):
-        knowledge_database = rag.create_faiss(
+        knowledge_database = create_faiss(
             embedding_model=self.embedding_model,
             docs_processed=self.docs_processed_unique,
             save_path=args.faiss_save_path
@@ -80,7 +95,7 @@ class TestRag(unittest.TestCase):
 
     
     def test_load_faiss(self):
-        faiss = rag.load_faiss(
+        faiss = load_faiss(
             path=args.load_faiss_path,
             embedding_model=self.embedding_model
         )
@@ -88,7 +103,7 @@ class TestRag(unittest.TestCase):
         self.assertTrue(faiss is not None)
 
     def test_init_pipeline(self):
-        llm = rag.init_pipeline(
+        llm = init_pipeline(
             model_path=args.model_path,
             tokenizer_path=args.tokenizer_path,
             save_path=args.llm_save_path
@@ -97,12 +112,12 @@ class TestRag(unittest.TestCase):
         self.assertTrue(llm is not None)
 
     def test_prompt_format(self):
-        rag_prompt_format = rag.prompt_format(tokenizer=self.embedding_model)
+        rag_prompt_format = prompt_format(tokenizer=self.embedding_model)
         self.rag_prompt_format = rag_prompt_format
         self.assertTrue(rag_prompt_format is not None)
     
     def test_answer(self):
-        output = rag.answer_with_rag(
+        output = answer_with_rag(
         question=args.question,
         llm=self.pipeline,
         knowledge_index=self.knowledge_database,
