@@ -114,13 +114,13 @@ def extract_data(
         columns = "CET Time,UK Time (HH:MM),Area Code,Area Name,Unit Price (inc VAT)\n"
         for link in all_links[1:]:
             downloaded_data = urlopen(LINK + link['href'])
-            with open(link['href'], 'w') as file:
+            with open("../data/" + link['href'], 'w') as file:
                 file.write(columns)
                 for line in urlopen(LINK + link['href']).readlines():
                     file.write(line.decode())
                 file.close()
         glob = "csv_tracker*"
-        loader = DirectoryLoader('./data', glob=glob, show_progress=True)
+        loader = DirectoryLoader('../data', glob=glob, show_progress=True)
         data = loader.load()
 
     elif test_csv:
