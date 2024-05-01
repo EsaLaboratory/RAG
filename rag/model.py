@@ -62,11 +62,6 @@ def main():
                         type=str,
                         default="../data/faiss/test1/faiss_index",
                         help="Path for local faiss object")
-    parser.add_argument('--tokenizer_path', 
-                        metavar='tokenizer_path', 
-                        type=str,
-                        default="HuggingFaceH4/zephyr-7b-beta",
-                        help="Path for local tokenizer (optional)")    
 
     args = parser.parse_args()
 
