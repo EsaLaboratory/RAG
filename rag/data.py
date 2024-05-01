@@ -1,5 +1,4 @@
 import argparse
-import time
 import sys
 import os
 sys.path.append(os.path.abspath("./rag/"))
@@ -47,29 +46,33 @@ def main():
     parser.add_argument('--embedding_model_name', 
                         metavar='embedding_model_name', 
                         type=str,
-                        default="HuggingFaceH4/zephyr-7b-beta",
+                        default="thenlper/gte-small",
                         help="Name of embedding model (optional)")
     parser.add_argument('--multiprocess', 
                         metavar='multiprocess', 
                         type=bool,
                         default=True,
                         help="Options loading embbeding (optional)")
-    parser.add_argument('--model_kwargs', 
-                        metavar='model_kwargs', 
+    parser.add_argument('--model_kwargs',
+                        metavar='model_kwargs',
                         type=dict,
-                        default={"device": "cpu"},
+                        default={"device": "gpu"},
                         help="Embeding kwargs, format json (optional)")
     parser.add_argument('--encode_kwargs',
                         metavar='encode_kwargs', 
                         type=str,
                         default={"normalize_embeddings": True},
                         help="Embeding kwargs, format json (optional)")
-
-    parser.add_argument('--save_path',
+    parser.add_argument('--save_path_embedding',
+                        metavar='save_path_embedding', 
+                        type=str,
+                        default=None,
+                        help="save path of the embedding model")
+    parser.add_argument('--save_path_faiss',
                         metavar='save_path', 
                         type=str,
                         default=None,
-                        help="path of the local tokenizer (optional)")
+                        help="save path of the faiss object")
 
     args = parser.parse_args()
 
@@ -84,18 +87,15 @@ def main():
     multiprocess = True if args.multiprocess is not None else False
     model_kwargs = args.model_kwargs
     encode_kwargs = args.encode_kwargs
-    save_path = args.save_path
+    save_path_embedding = args.save_path_embedding
+    save_path_faiss = args.save_path_faiss
 
-    START = time.time()
     raw_knowledge_base = extract_data(
                          path=extract_path,
                          test_html=test_html,
                          test_csv=test_csv,
                          )
-    end = time.time()
-    print(f"Data extraction done in : {end - START}")
 
-    start = time.time()
     docs_processed = split_documents(
                      chunk_size=chunk_size,
                      knowledge_base=raw_knowledge_base,
@@ -103,27 +103,20 @@ def main():
                      plot_path=plot_path,
                      separators=separators
                      )
-    end = time.time()
-    print(f"Data processing done in : {end - start}")
 
-    start = time.time()
-    embedding_model = init_embedding_model(embedding_model_name=embedding_name,
-                                           multiprocess=multiprocess,
-                                           model_kwargs=model_kwargs, 
-                                           encode_kwargs=encode_kwargs)
-    end = time.time()
-    print(f"Embedding model initialisation done in : {end - start}")
+    embedding_model = init_embedding_model(
+                      embedding_model_name=embedding_name,
+                      multiprocess=multiprocess,
+                      model_kwargs=model_kwargs, 
+                      encode_kwargs=encode_kwargs,
+                      save_path=save_path_embedding
+                      )
 
-    start = time.time()
     knowledge_vector_database = create_faiss(
                                 embedding_model=embedding_model,
                                 docs_processed=docs_processed,
-                                save_path=save_path
+                                save_path=save_path_faiss
                                 )
-    END = time.time()
-    print(f"Data embedding done in : {END - start}")
-    print("-----------------------------")
-    print(f"Data command took {END - START}")
 
 if __name__=="__main__":
     main()

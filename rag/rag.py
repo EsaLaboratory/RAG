@@ -3,7 +3,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import requests
-from zipfile import ZipFile
+import time
 import pandas as pd
 import matplotlib.pyplot as plt
 from typing import AsyncIterator, Iterator, Tuple, Optional, Union
@@ -34,6 +34,22 @@ SEPARATOR = [
     "",
 ]
 
+def timer(func:function)->function:
+    name=func.__name__
+    
+    def description(*args, **kwargs):
+        arg_str=', '.join(repr(arg) for arg in args)
+        start = time.time()
+        resultat=func(*args, **kwargs)
+        end = time.time()
+        if kwargs is None:
+            print(f"Function {name}\nargs: {arg_str}\ndone in :{end - start}")
+        else:    
+            key_word=', '.join(repr(kwargs[key]) for key in kwargs.keys())
+            print(f"Function {name}\nargs {arg_str}\nkwargs {key_word}\ndone in :{end - start}")
+        return resultat
+    return description
+
 READER_MODEL_NAME = "HuggingFaceH4/zephyr-7b-beta"
 class MyParser(BaseBlobParser):
     """A simple parser that creates a document from each line."""
@@ -48,7 +64,7 @@ class MyParser(BaseBlobParser):
                     page_content=line,
                     metadata={"line_number": line_number, "source": blob.source}
                 )
-
+@timer
 def extract_data(
     path: str = None,
     test_html: bool = True,
@@ -138,6 +154,7 @@ def extract_data(
     ]
     return raw_knowledge_database
 
+@timer
 def split_documents(
     chunk_size: int,
     knowledge_base: list[LangchainDocument],
@@ -192,11 +209,13 @@ def split_documents(
         plt.savefig(plot_path)
     return docs_processed_unique
 
+@timer
 def init_embedding_model(
     embedding_model_name: Optional[str] = "thenlper/gte-small",
     multiprocess: Optional[bool] = True,
     model_kwargs: Optional[dict] = {"device": "cpu"}, # gpu 
-    encode_kwargs: Optional[dict] = {"normalize_embeddings": True}
+    encode_kwargs: Optional[dict] = {"normalize_embeddings": True},
+    save_path: Optional[str] = None,
 ) -> HuggingFaceEmbeddings:
     """Initialize an embedding model.
     
@@ -205,17 +224,21 @@ def init_embedding_model(
         multiprocess: A boolean that defines multiprocessing parameter.
         model_kwargs: A dict containing device settings.
         encode_kwargs: A dict containing encoding settings.
-
+        save_path: A string that is a save path for the loaded embedding model.
+        
     Returns:
         An embedding model that will convert text into tokens.
     """
-    return HuggingFaceEmbeddings(
-        model_name=embedding_model_name,
-        multi_process=multiprocess,
-        model_kwargs=model_kwargs,
-        encode_kwargs=encode_kwargs
-        )
+    embedding_model = HuggingFaceEmbeddings(
+                      model_name=embedding_model_name,
+                      multi_process=multiprocess,
+                      model_kwargs=model_kwargs,
+                      encode_kwargs=encode_kwargs,
+                      cache_folder=save_path
+                      )
+    return embedding_model
 
+@timer
 def create_faiss(
     embedding_model: HuggingFaceEmbeddings,
     docs_processed: list[LangchainDocument],
@@ -239,6 +262,7 @@ def create_faiss(
     KNOWLEDGE_VECTOR_DATABASE.save_local(save_path)
     return KNOWLEDGE_VECTOR_DATABASE
 
+@timer
 def load_faiss(
     path: Union[str, list[str]],
     embedding_model: HuggingFaceEmbeddings
@@ -262,6 +286,7 @@ def load_faiss(
         faiss = FAISS.load_local(path, embedding_model)
     return faiss
 
+@timer
 def init_pipeline(
     model_path: Optional[str] = None,
     tokenizer_path: Optional[str] = None,
@@ -315,6 +340,7 @@ def init_pipeline(
     )
     return READER_LLM
 
+@timer
 def prompt_format(tokenizer: AutoTokenizer) -> Union[list[int], dict]:
     """Apply a prompt template to feed to the Reader LLM.
         
@@ -367,6 +393,7 @@ def prompt_format(tokenizer: AutoTokenizer) -> Union[list[int], dict]:
 #     """
 #     return RAGPretrainedModel.from_pretrained(name)
 
+@timer
 def answer_with_rag(
     question: str,
     llm: Pipeline,

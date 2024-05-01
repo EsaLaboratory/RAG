@@ -2,7 +2,7 @@ import argparse
 import sys
 import os
 sys.path.append(os.path.abspath("./rag/"))
-from rag import answer_with_rag, init_reranker, init_pipeline, load_faiss, prompt_format, init_embedding_model
+from rag import answer_with_rag, init_pipeline, load_faiss, prompt_format, init_embedding_model
 
 def main():
     """Creation of the model command."""
@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--embedding_model_name', 
                         metavar='embedding_model_name', 
                         type=str,
-                        default="HuggingFaceH4/zephyr-7b-beta",
+                        default="thenlper/gte-small",
                         help="Name of embedding model (optional)")
     parser.add_argument('--multiprocess', 
                         metavar='multiprocess', 
@@ -52,6 +52,11 @@ def main():
                         type=str,
                         default={"normalize_embeddings": True},
                         help="Embeding kwargs, format json (optional)")
+    parser.add_argument('--save_path_embedding',
+                        metavar='save_path_embedding', 
+                        type=str,
+                        default=None,
+                        help="save path of the embedding model")
     parser.add_argument('--faiss_path', 
                         metavar='faiss_path', 
                         type=str,
@@ -77,13 +82,15 @@ def main():
     else:
         raise Exception("Provide path to faiss object with the option --faiss")
     tokenizer_path = args.tokenizer_path
-    reranker_name = args.reranker
-    question = args.question 
+    # reranker_name = args.reranker
+    question = args.question
+    save_path_embedding = args.save_path_embedding
+
     reader_llm = init_pipeline(model_path=model_path,
                                tokenizer_path=tokenizer_path,
                                save_path=save_path)
 
-    embedding_model = init_embedding_model(embedding_model_name=embedding_name,
+    embedding_model = init_embedding_model(embedding_model_name=save_path_embedding,
                                            multiprocess=multiprocess,
                                            model_kwargs=model_kwargs, 
                                            encode_kwargs=encode_kwargs)
@@ -93,13 +100,13 @@ def main():
 
     rag_prompt_format = prompt_format(tokenizer=embedding_model)
 
-    reranker = init_reranker(name=reranker_name)
+    # reranker = init_reranker(name=reranker_name)
 
     output = answer_with_rag(question=question,
                              llm=reader_llm,
                              knowledge_index=knowledge_database,
                              rag_prompt_format=rag_prompt_format,
-                             reranker=reranker,
+                            #  reranker=reranker,
                              num_retrieved_docs=num_retrieved_docs,
                              num_docs_final=num_docs_final)
 
