@@ -115,7 +115,7 @@ def extract_data(
                    Area Name,Unit Price (inc VAT)\n"
         for link in all_links[1:]:
             downloaded_data = urlopen(LINK + link['href'])
-            with open("../data/" + link['href'], 'w') as file:
+            with open("../data/raw_data/" + link['href'], 'w') as file:
                 file.write(columns)
                 for line in urlopen(LINK + link['href']).readlines():
                     file.write(line.decode())
@@ -125,7 +125,7 @@ def extract_data(
         data = loader.load()
 
     elif test_csv:
-        path = "../data/jena_climate_2009_2016.csv"
+        path = "../data/raw_data/jena_climate_2009_2016.csv"
         loader = CSVLoader(file_path=path)
         data = loader.load()
 
@@ -143,7 +143,7 @@ def split_documents(
     chunk_size: int,
     knowledge_base: list[LangchainDocument],
     tokenizer_name: Optional[str] = "thenlper/gte-small",
-    plot: Optional[bool] = False,
+    plot_path: Optional[str] = None,
     separators: Optional[list[str]] = SEPARATOR
 ) -> list[LangchainDocument]:
     """Split documents into chunks and return a list of documents.
@@ -182,7 +182,7 @@ def split_documents(
             unique_texts[doc.page_content] = True
             docs_processed_unique.append(doc)
 
-    if plot:
+    if plot_path is not None:
         # Let's visualize the chunk sizes
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         lengths = []
@@ -190,8 +190,7 @@ def split_documents(
             lengths.append(len(tokenizer.encode(doc.page_content)))
         fig = pd.Series(lengths).hist()
         plt.title("Document lengths in the knowledge base in tokens")
-        plt.show()
-        # TODO ADD save fig option
+        plt.savefig(plot_path)
     return docs_processed_unique
 
 def init_embedding_model(

@@ -5,54 +5,60 @@ def main():
     """Creation of the model command."""
     parser = argparse.ArgumentParser(
         description="Output an LLM's answer to a question on documents")
-    parser.add_argument('--reranker', 
-                        metavar='reranker',
-                        type=str,
-                        help="Computes interactions between query document")
+    # parser.add_argument('--reranker', 
+    #                     metavar='reranker',
+    #                     type=str,
+    #                     help="Computes interactions between query document")
     parser.add_argument('--question', 
                         metavar='question', 
                         type=str,
+                        default="What is the temperature evolution on this day 25.10.2010 in Kelvin?",
                         help="question on data for llm")
     parser.add_argument('--model_path', 
                         metavar='model_path', 
                         type=str,
+                        defaut="HuggingFaceH4/zephyr-7b-beta",
                         help="path of the local model (optional)")
     parser.add_argument('--tokenizer_path', 
                         metavar='tokenizer_path', 
                         type=str,
+                        defaut="HuggingFaceH4/zephyr-7b-beta",
                         help="path of the local tokenizer (optional)")
     parser.add_argument('--save_path', 
                         metavar='save_path', 
                         type=str,
+                        default=None,
                         help="save path for llm and tokenizer (optional)")
     parser.add_argument('--embedding_model_name', 
                         metavar='embedding_model_name', 
                         type=str,
+                        defaut="HuggingFaceH4/zephyr-7b-beta",
                         help="Name of embedding model (optional)")
     parser.add_argument('--multiprocess', 
                         metavar='multiprocess', 
-                        type=str,
+                        type=bool,
+                        default=True,
                         help="Options loading embbeding (optional)")
     parser.add_argument('--model_kwargs', 
                         metavar='model_kwargs', 
-                        type=str,
+                        type=dict,
+                        default={"device": "cpu"},
                         help="Embeding kwargs, format json (optional)")
     parser.add_argument('--encode_kwargs',
                         metavar='encode_kwargs', 
                         type=str,
+                        default={"normalize_embeddings": True},
                         help="Embeding kwargs, format json (optional)")
     parser.add_argument('--faiss_path', 
                         metavar='faiss_path', 
                         type=str,
+                        default="../data/faiss/test2/faiss_index",
                         help="Path for local faiss object")
     parser.add_argument('--tokenizer_path', 
                         metavar='tokenizer_path', 
                         type=str,
-                        help="Path for local tokenizer (optional)")
-    parser.add_argument('--reranker_name', 
-                        metavar='reranker_name', 
-                        type=str,
-                        help="Name of the reranker (optional)")    
+                        default="HuggingFaceH4/zephyr-7b-beta",
+                        help="Path for local tokenizer (optional)")    
 
     args = parser.parse_args()
 
@@ -61,8 +67,8 @@ def main():
     save_path = args.save_path
     embedding_name = args.embedding_model_name
     multiprocess = True if args.multiprocess is not None else False
-    model_kwargs = dict(args.model_kwargs)
-    encode_kwargs = dict(args.encode_kwargs)
+    model_kwargs = args.model_kwargs
+    encode_kwargs = args.encode_kwargs
     if args.faiss_path is not None:
         faiss_path = args.faiss_path
     else:

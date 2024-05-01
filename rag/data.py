@@ -7,34 +7,40 @@ def main():
         description="Create and save FAISS object given raw data")
     parser.add_argument('--chunk_size', 
                         metavar='chunk_size', 
-                        type=str,
+                        type=int,
+                        default=512,
                         help="Maximum size of each chunk")
     parser.add_argument('--tokenizer_name', 
                         metavar='tokenizer_name', 
                         type=str,
+                        default="thenlper/gte-small",
                         help="Name of tokenizer model")
-    parser.add_argument('--plot', 
-                        metavar='plot', 
+    parser.add_argument('--plot_path', 
+                        metavar='plot_path', 
                         type=str,
-                        help="Plot chunck size distribution or not")
+                        default=None,
+                        help="Save path for plot of chunck size distribution")
     parser.add_argument('--separators', 
                         metavar='separators', 
                         type=str,
+                        default=None,
                         help="Define list of separators")
     parser.add_argument('--embedding_model', 
                         metavar='embedding_model', 
                         type=str,
+                        default="thenlper/gte-small",
                         help="Name of embedding model")
     parser.add_argument('--save_path',
                         metavar='save_path', 
                         type=str,
+                        default=None,
                         help="path of the local tokenizer (optional)")
 
     args = parser.parse_args()
 
     chunk_size = args.chunk_size
     tokenizer_name = args.tokenizer_name
-    plot = args.plot
+    plot_path = args.plot_path
     separators = args.separators
     embedding_model = args.embedding_model
     save_path = args.save_path
@@ -45,7 +51,7 @@ def main():
     docs_processed = split_documents(chunk_size=chunk_size,
                                             knowledge_base=raw_knowledge_base,
                                             tokenizer_name=tokenizer_name,
-                                            plot=plot,
+                                            plot_path=plot_path,
                                             separators=separators)
 
     knowledge_vector_database = create_faiss(embedding_model=embedding_model,

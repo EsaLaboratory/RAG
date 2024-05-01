@@ -34,7 +34,7 @@ class TestRag(unittest.TestCase):
                                 chunk_size=args["chunk_size"],
                                 knowledge_base=doc,
                                 tokenizer_name=args["tokenizer_name"],
-                                plot=args["plot"],
+                                plot_path=args["plot_path"],
                                 separators=args["separators"],
                                 )
         self.assertTrue(docs_processed_unique is not None)
