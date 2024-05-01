@@ -229,7 +229,7 @@ def init_embedding_model(
     Returns:
         An embedding model that will convert text into tokens.
     """
-    bnb_config = BitsAndBytesConfig(
+    model_kwargs['quantization_config'] = BitsAndBytesConfig(
                  load_in_4bit=True,
                  bnb_4bit_use_double_quant=True,
                  bnb_4bit_quant_type="nf4",
@@ -241,7 +241,6 @@ def init_embedding_model(
                       model_kwargs=model_kwargs,
                       encode_kwargs=encode_kwargs,
                       cache_folder=save_path,
-                      quantization_config=bnb_config,
                       )
     return embedding_model
 
