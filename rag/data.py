@@ -3,7 +3,7 @@ import time
 import sys
 import os
 sys.path.append(os.path.abspath("./rag/"))
-from rag import extract_data, split_documents, create_faiss
+from rag import extract_data, split_documents, create_faiss, init_embedding_model
 
 def main():
     "Creation of the data command"
@@ -44,11 +44,27 @@ def main():
                         type=str,
                         default=None,
                         help="Define list of separators")
-    parser.add_argument('--embedding_model', 
-                        metavar='embedding_model', 
+    parser.add_argument('--embedding_model_name', 
+                        metavar='embedding_model_name', 
                         type=str,
-                        default="thenlper/gte-small",
-                        help="Name of embedding model")
+                        defaut="HuggingFaceH4/zephyr-7b-beta",
+                        help="Name of embedding model (optional)")
+    parser.add_argument('--multiprocess', 
+                        metavar='multiprocess', 
+                        type=bool,
+                        default=True,
+                        help="Options loading embbeding (optional)")
+    parser.add_argument('--model_kwargs', 
+                        metavar='model_kwargs', 
+                        type=dict,
+                        default={"device": "cpu"},
+                        help="Embeding kwargs, format json (optional)")
+    parser.add_argument('--encode_kwargs',
+                        metavar='encode_kwargs', 
+                        type=str,
+                        default={"normalize_embeddings": True},
+                        help="Embeding kwargs, format json (optional)")
+
     parser.add_argument('--save_path',
                         metavar='save_path', 
                         type=str,
@@ -64,7 +80,10 @@ def main():
     test_csv = args.test_csv
     plot_path = args.plot_path
     separators = args.separators
-    embedding_model = args.embedding_model
+    embedding_name = args.embedding_model_name
+    multiprocess = True if args.multiprocess is not None else False
+    model_kwargs = args.model_kwargs
+    encode_kwargs = args.encode_kwargs
     save_path = args.save_path
 
     START = time.time()
@@ -74,7 +93,7 @@ def main():
                          test_csv=test_csv,
                          )
     end = time.time()
-    print(f"Data extraction done in : {START - end}")
+    print(f"Data extraction done in : {end - START}")
 
     start = time.time()
     docs_processed = split_documents(
@@ -85,8 +104,15 @@ def main():
                      separators=separators
                      )
     end = time.time()
-    print(f"Data processing done in : {start - end}")
-    print(docs_processed)
+    print(f"Data processing done in : {end - start}")
+
+    start = time.time()
+    embedding_model = init_embedding_model(embedding_model_name=embedding_name,
+                                           multiprocess=multiprocess,
+                                           model_kwargs=model_kwargs, 
+                                           encode_kwargs=encode_kwargs)
+    end = time.time()
+    print(f"Embedding model initialisation done in : {end - start}")
 
     start = time.time()
     knowledge_vector_database = create_faiss(
@@ -95,9 +121,9 @@ def main():
                                 save_path=save_path
                                 )
     END = time.time()
-    print(f"Data embedding done in : {start - END}")
+    print(f"Data embedding done in : {END - start}")
     print("-----------------------------")
-    print(f"Data command took {START - END}")
+    print(f"Data command took {END - START}")
 
 if __name__=="__main__":
     main()
