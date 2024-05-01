@@ -229,12 +229,19 @@ def init_embedding_model(
     Returns:
         An embedding model that will convert text into tokens.
     """
+    bnb_config = BitsAndBytesConfig(
+                 load_in_4bit=True,
+                 bnb_4bit_use_double_quant=True,
+                 bnb_4bit_quant_type="nf4",
+                 bnb_4bit_compute_dtype=torch.bfloat16,
+                 )
     embedding_model = HuggingFaceEmbeddings(
                       model_name=embedding_model_name,
                       multi_process=multiprocess,
                       model_kwargs=model_kwargs,
                       encode_kwargs=encode_kwargs,
-                      cache_folder=save_path
+                      cache_folder=save_path,
+                      quantization_config=bnb_config,
                       )
     return embedding_model
 
@@ -319,7 +326,7 @@ def init_pipeline(
                     )
     else:
         model = AutoModelForCausalLM.from_pretrained(
-                READER_MODEL_NAME, 
+                READER_MODEL_NAME,
                 quantization_config=bnb_config
                 )
         tokenizer = AutoTokenizer.from_pretrained(READER_MODEL_NAME)
