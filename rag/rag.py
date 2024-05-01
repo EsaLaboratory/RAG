@@ -6,7 +6,7 @@ import requests
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
-from typing import AsyncIterator, Iterator, Tuple, Optional, Union
+from typing import Iterator, Tuple, Optional, Union, Callable, Any
 from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
 from langchain_community.document_loaders.csv_loader import CSVLoader
@@ -34,7 +34,7 @@ SEPARATOR = [
     "",
 ]
 
-def timer(func:function)->function:
+def timer(func:Callable[[Any], Any])->Callable[[Any], Any]:
     name=func.__name__
     
     def description(*args, **kwargs):
