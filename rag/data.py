@@ -49,7 +49,7 @@ def main():
                         default="thenlper/gte-small",
                         help="Name of embedding model (optional)")
     parser.add_argument('--multiprocess', 
-                        metavar='multiprocess', 
+                        metavar='multiprocess',
                         type=bool,
                         default=True,
                         help="Options loading embbeding (optional)")
@@ -111,7 +111,7 @@ def main():
                       encode_kwargs=encode_kwargs,
                       save_path=save_path_embedding
                       )
-
+    print("test")
     knowledge_vector_database = create_faiss(
                                 embedding_model=embedding_model,
                                 docs_processed=docs_processed,
