@@ -20,12 +20,12 @@ def main():
     parser.add_argument('--model_path', 
                         metavar='model_path', 
                         type=str,
-                        defaut="HuggingFaceH4/zephyr-7b-beta",
+                        default="HuggingFaceH4/zephyr-7b-beta",
                         help="path of the local model (optional)")
     parser.add_argument('--tokenizer_path', 
                         metavar='tokenizer_path', 
                         type=str,
-                        defaut="HuggingFaceH4/zephyr-7b-beta",
+                        default="HuggingFaceH4/zephyr-7b-beta",
                         help="path of the local tokenizer (optional)")
     parser.add_argument('--save_path', 
                         metavar='save_path', 
@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--embedding_model_name', 
                         metavar='embedding_model_name', 
                         type=str,
-                        defaut="HuggingFaceH4/zephyr-7b-beta",
+                        default="HuggingFaceH4/zephyr-7b-beta",
                         help="Name of embedding model (optional)")
     parser.add_argument('--multiprocess', 
                         metavar='multiprocess', 

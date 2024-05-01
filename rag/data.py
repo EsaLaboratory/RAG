@@ -47,7 +47,7 @@ def main():
     parser.add_argument('--embedding_model_name', 
                         metavar='embedding_model_name', 
                         type=str,
-                        defaut="HuggingFaceH4/zephyr-7b-beta",
+                        default="HuggingFaceH4/zephyr-7b-beta",
                         help="Name of embedding model (optional)")
     parser.add_argument('--multiprocess', 
                         metavar='multiprocess', 
