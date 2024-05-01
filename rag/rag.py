@@ -229,12 +229,12 @@ def init_embedding_model(
     Returns:
         An embedding model that will convert text into tokens.
     """
-    model_kwargs['quantization_config'] = BitsAndBytesConfig(
-                 load_in_4bit=True,
-                 bnb_4bit_use_double_quant=True,
-                 bnb_4bit_quant_type="nf4",
-                 bnb_4bit_compute_dtype=torch.bfloat16,
-                 )
+    # model_kwargs['quantization_config'] = BitsAndBytesConfig(
+    #              load_in_4bit=True,
+    #              bnb_4bit_use_double_quant=True,
+    #              bnb_4bit_quant_type="nf4",
+    #              bnb_4bit_compute_dtype=torch.bfloat16,
+    #              )
     embedding_model = HuggingFaceEmbeddings(
                       model_name=embedding_model_name,
                       multi_process=multiprocess,
@@ -335,15 +335,15 @@ def init_pipeline(
         tokenizer.save_pretrained(save_path)
 
     READER_LLM = pipeline(
-        model=model,
-        tokenizer=tokenizer,
-        task="text-generation",
-        do_sample=True,
-        temperature=0.2,
-        repetition_penalty=1.1,
-        return_full_text=False,
-        max_new_tokens=500,
-    )
+                 model=model,
+                 tokenizer=tokenizer,
+                 task="text-generation",
+                 do_sample=True,
+                 temperature=0.2,
+                 repetition_penalty=1.1,
+                 return_full_text=False,
+                 max_new_tokens=500,
+                 )
     return READER_LLM
 
 @timer
