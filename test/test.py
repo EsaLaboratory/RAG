@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import json
+import time
 
 sys.path.append(os.path.abspath("../rag/"))
 
@@ -19,13 +20,15 @@ class TestRag(unittest.TestCase):
         for key in args.keys():
             print(f"{key} : {args[key]}\n")
         print("\nTest extract function")
+        start = time.time()
         doc = extract_data(
               path=args["extract_path"],
               test_html=args["test_html"],
               test_csv=args["test_csv"],
               )
         self.assertTrue(doc is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest split function")
         docs_processed_unique = split_documents(
                                 chunk_size=args["chunk_size"],
@@ -35,7 +38,8 @@ class TestRag(unittest.TestCase):
                                 separators=args["separators"],
                                 )
         self.assertTrue(docs_processed_unique is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest init_emmbedding function")
         embedding_model = init_embedding_model(
                           embedding_model_name=args["embedding_model_name"],
@@ -44,7 +48,8 @@ class TestRag(unittest.TestCase):
                           encode_kwargs=args["encode_kwargs"],
                           )
         self.assertTrue(embedding_model is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest create faiss function")
         knowledge_database = create_faiss(
                              embedding_model=embedding_model,
@@ -52,14 +57,16 @@ class TestRag(unittest.TestCase):
                              save_path=args["faiss_save_path"],
                              )
         self.assertTrue(knowledge_database is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest load faiss function")
         faiss = load_faiss(
                 path=args["load_faiss_path"],
                 embedding_model=embedding_model,
                 )
         self.assertTrue(faiss is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest init pipeline function")
         llm = init_pipeline(
               model_path=args["model_path"],
@@ -67,11 +74,13 @@ class TestRag(unittest.TestCase):
               save_path=args["llm_save_path"],
               )
         self.assertTrue(llm is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest prompt format function")
         rag_prompt_format = prompt_format(tokenizer=embedding_model)
         self.assertTrue(rag_prompt_format is not None)
-        print("Passed")
+        end = time.time()
+        print(f"Passed in {end - start}")
         print("\nTest answer with rag function")
         output = answer_with_rag(
         question=args["question"],

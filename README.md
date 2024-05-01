@@ -25,6 +25,8 @@ TODO add folder tree and file description
     * folder containing the documentation
 * img
     * default folder where the figures are saved
+* data
+    * default folder where the data are saved
 * rag
     * rag.py
         * script that defines the LLM pipeline functions
@@ -45,6 +47,8 @@ TODO add folder tree and file description
     * ADD TODO
 * setup.cfg
     * ADD TODO
+* requirements.txt
+    * list all required libraries
 
 ## Instalation
 
@@ -52,14 +56,23 @@ Several installation are possible. We will describe a simple one.
 
 - After having downloaded the project and having extracted it, go to your terminal and move your working directory to the newly downloaded folder **rag**.
 
-- Create a python environment with the following requirements :
-    * list requirements 
-    * TODO ADD command to make it done with pip install requirement.txt
+- Create a python environment with the requirements listed in requirements.txt file:
+``` bash
+conda create --name <env> --file requirements.txt
+```
 
 - Activate this environment and type the following command :
 ``` bash
 pip install .
 ```
+
+- To check your installation you can try the following commands:
+``` bash
+cd test
+python test.py 1
+python test.py 2
+```
+If everything is fine, the tests should all pass.
 
 ## Documentation 
 
@@ -167,7 +180,7 @@ TODO ADD OUTPUT
 
 ### Pieces of advice
 
-On préférera utiliser une taille de pixel comprise entre 1e-3 et 1e-5 et un nombre d'itération entre 50 et 200 pour éviter des calculs trop longs et/ou des résultats trop approximatifs. De même, pour zmin et zmax, les fractales sont comprises dans le cercle centré de rayon 2. Il n'est donc pas nécessaire de tester des valeurs cadres plus importantes que celle de base (zmin = -2 -2j et zmax = 2 + 2j).
+TODO add
 
 ## TODO list
 

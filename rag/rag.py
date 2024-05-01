@@ -234,10 +234,10 @@ def create_faiss(
         A FAISS object assimilited as a database that we will query.
     """
     KNOWLEDGE_VECTOR_DATABASE = FAISS.from_documents(
-        docs_processed, 
-        embedding_model, 
-        distance_strategy=DistanceStrategy.COSINE,
-        )
+                                docs_processed,
+                                embedding_model,
+                                distance_strategy=DistanceStrategy.COSINE,
+                                )
     KNOWLEDGE_VECTOR_DATABASE.save_local(save_path)
     return KNOWLEDGE_VECTOR_DATABASE
 
