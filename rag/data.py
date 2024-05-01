@@ -1,5 +1,8 @@
 import argparse
-from rag.rag import extract_data, split_documents, create_faiss
+import sys
+import os
+sys.path.append(os.path.abspath("./rag/"))
+from rag import extract_data, split_documents, create_faiss
 
 def main():
     "Creation of the data command"

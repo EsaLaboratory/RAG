@@ -1,5 +1,8 @@
 import argparse
-from rag.rag import answer_with_rag, init_reranker, init_pipeline, load_faiss, prompt_format, init_embedding_model
+import sys
+import os
+sys.path.append(os.path.abspath("./rag/"))
+from rag import answer_with_rag, init_reranker, init_pipeline, load_faiss, prompt_format, init_embedding_model
 
 def main():
     """Creation of the model command."""
@@ -52,7 +55,7 @@ def main():
     parser.add_argument('--faiss_path', 
                         metavar='faiss_path', 
                         type=str,
-                        default="../data/faiss/test2/faiss_index",
+                        default="../data/faiss/test1/faiss_index",
                         help="Path for local faiss object")
     parser.add_argument('--tokenizer_path', 
                         metavar='tokenizer_path', 
@@ -75,11 +78,7 @@ def main():
         raise Exception("Provide path to faiss object with the option --faiss")
     tokenizer_path = args.tokenizer_path
     reranker_name = args.reranker
-    if args.question is not None:
-        question = args.question 
-    else:
-        question = "What is the temperature evolution on this day 25.10.2010?"
-
+    question = args.question 
     reader_llm = init_pipeline(model_path=model_path,
                                tokenizer_path=tokenizer_path,
                                save_path=save_path)
