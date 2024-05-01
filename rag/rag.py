@@ -122,17 +122,16 @@ def extract_data(
                 file.close()
         glob = "csv_tracker*"
         loader = DirectoryLoader('../data', glob=glob, show_progress=True)
-        data = loader.load()
 
     elif test_csv:
         path = "../data/raw_data/jena_climate_2009_2016.csv"
         loader = CSVLoader(file_path=path)
-        data = loader.load()
 
     else:
         raise ValueError("No path where given")
 
     # Storing data into langchain format
+    data = loader.load()
     raw_knowledge_database = [
         LangchainDocument(page_content=doc.page_content, metadata=doc.metadata)
         for doc in data
