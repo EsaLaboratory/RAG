@@ -1,4 +1,5 @@
 import argparse
+import time
 import sys
 import os
 sys.path.append(os.path.abspath("./rag/"))
@@ -66,12 +67,16 @@ def main():
     embedding_model = args.embedding_model
     save_path = args.save_path
 
+    START = time.time()
     raw_knowledge_base = extract_data(
                          path=extract_path,
                          test_html=test_html,
                          test_csv=test_csv,
                          )
-    
+    end = time.time()
+    print(f"Data extraction done in : {START - end}")
+
+    start = time.time()
     docs_processed = split_documents(
                      chunk_size=chunk_size,
                      knowledge_base=raw_knowledge_base,
@@ -79,12 +84,20 @@ def main():
                      plot_path=plot_path,
                      separators=separators
                      )
+    end = time.time()
+    print(f"Data processing done in : {start - end}")
+    print(docs_processed)
 
+    start = time.time()
     knowledge_vector_database = create_faiss(
                                 embedding_model=embedding_model,
                                 docs_processed=docs_processed,
                                 save_path=save_path
                                 )
+    END = time.time()
+    print(f"Data embedding done in : {start - END}")
+    print("-----------------------------")
+    print(f"Data command took {START - END}")
 
 if __name__=="__main__":
     main()
