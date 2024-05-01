@@ -13,6 +13,21 @@ def main():
                         type=int,
                         default=512,
                         help="Maximum size of each chunk")
+    parser.add_argument('--extract_path', 
+                        metavar='extract_path', 
+                        type=str,
+                        default=None,
+                        help="Raw data path")
+    parser.add_argument('--test_html', 
+                        metavar='test_html', 
+                        type=bool,
+                        default=True,
+                        help="Option for test1 load")
+    parser.add_argument('--test_csv', 
+                        metavar='test_csv', 
+                        type=bool,
+                        default=False,
+                        help="Option for test2 load")
     parser.add_argument('--tokenizer_name', 
                         metavar='tokenizer_name', 
                         type=str,
@@ -43,23 +58,33 @@ def main():
 
     chunk_size = args.chunk_size
     tokenizer_name = args.tokenizer_name
+    extract_path = args.extract_path
+    test_html = args.test_html
+    test_csv = args.test.csv
     plot_path = args.plot_path
     separators = args.separators
     embedding_model = args.embedding_model
     save_path = args.save_path
 
-    raw_knowledge_base = extract_data(url=None,
-                                      path=None)
+    raw_knowledge_base = extract_data(
+                         path=extract_path,
+                         test_html=test_html,
+                         test_csv=test_csv,
+                         )
     
-    docs_processed = split_documents(chunk_size=chunk_size,
-                                            knowledge_base=raw_knowledge_base,
-                                            tokenizer_name=tokenizer_name,
-                                            plot_path=plot_path,
-                                            separators=separators)
+    docs_processed = split_documents(
+                     chunk_size=chunk_size,
+                     knowledge_base=raw_knowledge_base,
+                     tokenizer_name=tokenizer_name,
+                     plot_path=plot_path,
+                     separators=separators
+                     )
 
-    knowledge_vector_database = create_faiss(embedding_model=embedding_model,
-                                             docs_processed=docs_processed,
-                                             save_path=save_path)
+    knowledge_vector_database = create_faiss(
+                                embedding_model=embedding_model,
+                                docs_processed=docs_processed,
+                                save_path=save_path
+                                )
 
 if __name__=="__main__":
     main()
