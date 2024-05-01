@@ -43,10 +43,10 @@ def timer(func:Callable[[Any], Any])->Callable[[Any], Any]:
         resultat=func(*args, **kwargs)
         end = time.time()
         if kwargs is None:
-            print(f"Function {name}\nargs: {arg_str}\ndone in :{end - start}")
+            print(f"\nFunction {name}\nargs: {arg_str}\ndone in :{end - start}")
         else:    
-            key_word=', '.join(repr(kwargs[key]) for key in kwargs.keys())
-            print(f"Function {name}\nargs {arg_str}\nkwargs {key_word}\ndone in :{end - start}")
+            key_word=', '.join(key + repr(kwargs[key]) for key in kwargs.keys())
+            print(f"\nFunction {name}\nargs {arg_str}\nkwargs {key_word}\ndone in :{end - start}")
         return resultat
     return description
 

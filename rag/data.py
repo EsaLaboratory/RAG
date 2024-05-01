@@ -56,7 +56,7 @@ def main():
     parser.add_argument('--model_kwargs',
                         metavar='model_kwargs',
                         type=dict,
-                        default={"device": "gpu"},
+                        default={"device": "cuda"},
                         help="Embeding kwargs, format json (optional)")
     parser.add_argument('--encode_kwargs',
                         metavar='encode_kwargs', 
