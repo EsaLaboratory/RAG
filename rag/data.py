@@ -60,7 +60,7 @@ def main():
     tokenizer_name = args.tokenizer_name
     extract_path = args.extract_path
     test_html = args.test_html
-    test_csv = args.test.csv
+    test_csv = args.test_csv
     plot_path = args.plot_path
     separators = args.separators
     embedding_model = args.embedding_model
