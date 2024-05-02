@@ -290,7 +290,7 @@ def load_faiss(
         A FAISS object assimilited as a database that we will query.
     """
     if type(path) == list:
-        faiss = FAISS.load_local(path[0], embedding_model)
+        faiss = FAISS.load_local(path[0], embedding_model, allow_dangerous_deserialization=True)
         for path_to_faiss in path[1:]:
             faiss.merge_from(FAISS.load_local(path_to_faiss, embedding_model))
     else:
