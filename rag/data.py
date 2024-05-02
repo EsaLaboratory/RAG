@@ -103,7 +103,9 @@ def main():
                      plot_path=plot_path,
                      separators=separators
                      )
-
+    print(docs_processed)
+    print(docs_processed[0])
+    print(len(docs_processed))
     embedding_model = init_embedding_model(
                       embedding_model_name=embedding_name,
                       multiprocess=multiprocess,
@@ -111,7 +113,7 @@ def main():
                       encode_kwargs=encode_kwargs,
                       save_path=save_path_embedding
                       )
-    print("test")
+
     knowledge_vector_database = create_faiss(
                                 embedding_model=embedding_model,
                                 docs_processed=docs_processed,
