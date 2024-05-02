@@ -4,8 +4,29 @@ import matplotlib.pyplot as plt
 import picos as pc
 import datetime
 from datetime import timedelta
-from typing import Optional, Union
+from typing import Iterator, Tuple, Optional, Union, Callable, Any
+import time
 
+def timer(func:Callable[[Any], Any])->Callable[[Any], Any]:
+    name=func.__name__
+    
+    def description(*args, **kwargs):
+        arg_str=', '.join(repr(arg) for arg in args)
+        start = time.time()
+        resultat=func(*args, **kwargs)
+        end = time.time()
+        if kwargs is None:
+            print(f"\nFunction {name}\nargs: {arg_str}\ndone in :{end - start}")
+        else:
+            key_word = ""
+            for key in kwargs.keys():
+                if len(repr(kwargs[key])) < 15:
+                    key_word += ', ' + key + ": "+ repr(kwargs[key])
+                else:
+                    key_word += ', ' + key + ": "+ repr(type(kwargs[key]))
+            print(f"\nFunction {name}\nargs {arg_str}\nkwargs {key_word}\ndone in :{end - start}")
+        return resultat
+    return description
 class Market():
     """This class describes a basic electricity market.
 
@@ -15,6 +36,7 @@ class Market():
         dt: float = time delta.
         N: int = number of optimization point.
     """
+    @timer
     def __init__(
         self, 
         prices : np.array, 
@@ -71,6 +93,7 @@ class Model():
         temperature: house temperature K.
         cost: cost of the used energy.
     """
+    @timer
     def __init__(
         self, 
         EV:  int, 
@@ -80,7 +103,8 @@ class Model():
         Tmin: float, 
         Tmax: float, 
         market: Market, 
-        weather_forecast: np.array
+        weather_forecast: np.array,
+        plot_path: str,
         ) -> None:
         """Initialization of Model object.
         
@@ -136,6 +160,7 @@ class Model():
         self.energy = pc.RealVariable("energy", self.market.N+1)
         self.temperature = pc.RealVariable("temperature", self.market.N+1)
         self.cost = 0
+        self.plot_path = plot_path
         if self.market.prices is None:
             prices = []
             for i in range(self.market.N):
@@ -145,6 +170,11 @@ class Model():
                     price = self.market.night_price
                 prices.append([price])
             self.market.prices = np.array(prices)
+        if weather_forecast is None:
+            T1 = np.linspace(self.T0 - 5, self.T0 -10, self.market.N//2)
+            T2 = np.linspace(self.T0 -10, self.T0 - 5, self.market.N//2)
+            self.T_outside = np.concatenate((T1, T2))
+            self.T_outside += np.random.random(self.market.N)
 
     def get_index(self, time: datetime.datetime) -> bool:
         """Return the closest index from datetime.
@@ -201,7 +231,7 @@ class Model():
         for i in range(self.market.N):
             # we can only charge the vehicule if it is in the house
             current_time = self.get_time(i)
-            if self.departure_time < current_time < self.arrival_time:
+            if current_time < self.arrival_time:
                 problem += self.power_e[i] == 0
             # power and energy must be positive
             else:
@@ -266,7 +296,7 @@ class Model():
         ax[3].set_yticks(ticks=np.round(np.linspace(np.min(self.T_outside) - 273.15, self.Tmax - 270.15, 5), 0))
         ax[3].set_ylabel(r"$Temperature \quad °C$", fontsize=8)
         ax[3].set_xlabel(r"$time$", fontsize=8)
-        plt.show()
+        plt.savefig(self.plot_path)
 
 def tests(model : Model) -> None:
     """Test function of the class Model
