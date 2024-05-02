@@ -382,6 +382,28 @@ def prompt_format(tokenizer: AutoTokenizer) -> Union[list[int], dict]:
         prompt_in_chat_format, tokenize=False, add_generation_prompt=True
     )
 
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "the city e.g. London",
+                    },
+                    "unit": {
+                        "type": "string", 
+                        "enum": ["celsius", "kelvin"]},
+                },
+                "required": ["location"],
+            },
+        },   
+    }
+]
 
 
 # def init_reranker(name: Optional[str] = "colbert-ir/colbertv2.0"
