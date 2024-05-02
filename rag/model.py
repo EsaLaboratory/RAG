@@ -15,7 +15,7 @@ def main():
     parser.add_argument('--question', 
                         metavar='question', 
                         type=str,
-                        default="What is the temperature evolution on this day 25.10.2010 in Kelvin?",
+                        default="What is the temperature evolution in Kelvin?",
                         help="question on data for llm")
     parser.add_argument('--model_path', 
                         metavar='model_path', 
@@ -52,11 +52,6 @@ def main():
                         type=str,
                         default={"normalize_embeddings": True},
                         help="Embeding kwargs, format json (optional)")
-    parser.add_argument('--save_path_embedding',
-                        metavar='save_path_embedding', 
-                        type=str,
-                        default=None,
-                        help="save path of the embedding model")
     parser.add_argument('--faiss_path', 
                         metavar='faiss_path', 
                         type=str,
@@ -79,13 +74,12 @@ def main():
     tokenizer_path = args.tokenizer_path
     # reranker_name = args.reranker
     question = args.question
-    save_path_embedding = args.save_path_embedding
 
     reader_llm = init_pipeline(model_path=model_path,
                                tokenizer_path=tokenizer_path,
                                save_path=save_path)
 
-    embedding_model = init_embedding_model(embedding_model_name=save_path_embedding,
+    embedding_model = init_embedding_model(embedding_model_name=embedding_name,
                                            multiprocess=multiprocess,
                                            model_kwargs=model_kwargs, 
                                            encode_kwargs=encode_kwargs)
