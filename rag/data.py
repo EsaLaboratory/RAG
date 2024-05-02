@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--test_html', 
                         metavar='test_html', 
                         type=bool,
-                        default=True,
+                        default=False,
                         help="Option for test1 load")
     parser.add_argument('--test_csv', 
                         metavar='test_csv', 
