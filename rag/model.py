@@ -57,6 +57,21 @@ def main():
                         type=str,
                         default="../data/faiss/test1/faiss_index",
                         help="Path for local faiss object")
+    parser.add_argument('--encode_kwargs',
+                        metavar='encode_kwargs', 
+                        type=str,
+                        default={"normalize_embeddings": True},
+                        help="Embeding kwargs, format json (optional)")
+    parser.add_argument('--num_retrieved_docs', 
+                        metavar='num_retrieved_docs', 
+                        type=str,
+                        default=30,
+                        help="Max number of retrieved docs")
+    parser.add_argument('--num_docs_final', 
+                        metavar='num_docs_final', 
+                        type=str,
+                        default=24,
+                        help="Max number of context docs")
 
     args = parser.parse_args()
 
@@ -74,6 +89,8 @@ def main():
     tokenizer_path = args.tokenizer_path
     # reranker_name = args.reranker
     question = args.question
+    num_retrieved_docs = args.num_retrieved_docs
+    num_docs_final = args.num_docs_final
 
     reader_llm = init_pipeline(model_path=model_path,
                                tokenizer_path=tokenizer_path,

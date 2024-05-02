@@ -313,6 +313,7 @@ def init_pipeline(
     Returns:
         A LLM pipeline for text generation.
     """
+    # FIXME
     # bnb_config = BitsAndBytesConfig(
     #             load_in_4bit=True,
     #             bnb_4bit_use_double_quant=True,
