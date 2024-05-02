@@ -312,6 +312,7 @@ def init_pipeline(
     
     Returns:
         A LLM pipeline for text generation.
+        A tokenizer adapted to this LLM.
     """
     # FIXME
     # bnb_config = BitsAndBytesConfig(
@@ -350,7 +351,7 @@ def init_pipeline(
                  return_full_text=False,
                  max_new_tokens=500,
                  )
-    return READER_LLM
+    return READER_LLM, tokenizer
 
 @timer
 def prompt_format(tokenizer: AutoTokenizer) -> Union[list[int], dict]:

@@ -87,7 +87,7 @@ def main():
     num_retrieved_docs = args.num_retrieved_docs
     num_docs_final = args.num_docs_final
 
-    reader_llm = init_pipeline(model_path=model_path,
+    reader_llm, tokenizer = init_pipeline(model_path=model_path,
                                tokenizer_path=tokenizer_path,
                                save_path=save_path)
 
@@ -99,7 +99,7 @@ def main():
     knowledge_database = load_faiss(path=faiss_path,
                                     embedding_model=embedding_model)
 
-    rag_prompt_format = prompt_format(tokenizer=embedding_model)
+    rag_prompt_format = prompt_format(tokenizer=tokenizer)
 
     # reranker = init_reranker(name=reranker_name)
 
