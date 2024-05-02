@@ -95,7 +95,7 @@ def main():
                          test_html=test_html,
                          test_csv=test_csv,
                          )
-
+    print(extract_path, raw_knowledge_base)
     docs_processed = split_documents(
                      chunk_size=chunk_size,
                      knowledge_base=raw_knowledge_base,
