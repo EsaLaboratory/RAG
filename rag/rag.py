@@ -313,17 +313,17 @@ def init_pipeline(
     Returns:
         A LLM pipeline for text generation.
     """
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
+    # bnb_config = BitsAndBytesConfig(
+    #             load_in_4bit=True,
+    #             bnb_4bit_use_double_quant=True,
+    #             bnb_4bit_quant_type="nf4",
+    #             bnb_4bit_compute_dtype=torch.bfloat16,
+    #             )
 
     if model_path is not None and tokenizer_path is not None:
         model = AutoModelForCausalLM.from_pretrained(
                 pretrained_model_name_or_path=model_path, 
-                quantization_config=bnb_config
+                # quantization_config=bnb_config
                 )
         tokenizer = AutoTokenizer.from_pretrained(
                     pretrained_model_name_or_path=tokenizer_path
@@ -331,7 +331,7 @@ def init_pipeline(
     else:
         model = AutoModelForCausalLM.from_pretrained(
                 READER_MODEL_NAME,
-                quantization_config=bnb_config
+                # quantization_config=bnb_config
                 )
         tokenizer = AutoTokenizer.from_pretrained(READER_MODEL_NAME)
     
