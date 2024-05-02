@@ -15,7 +15,7 @@ def main():
     parser.add_argument('--question', 
                         metavar='question', 
                         type=str,
-                        default="What is the temperature evolution in Kelvin?",
+                        default="What is the temperature evolution on the 26 December of 2016 in Kelvin?",
                         help="question on data for llm")
     parser.add_argument('--model_path', 
                         metavar='model_path', 
