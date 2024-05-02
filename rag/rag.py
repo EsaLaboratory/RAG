@@ -67,7 +67,7 @@ class MyParser(BaseBlobParser):
 @timer
 def extract_data(
     path: str = None,
-    test_html: bool = True,
+    test_html: bool = False,
     test_csv: bool = False,
 )-> list[LangchainDocument]:
     """Load data.
