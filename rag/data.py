@@ -95,7 +95,7 @@ def main():
                          test_html=test_html,
                          test_csv=test_csv,
                          )
-    print(extract_path, raw_knowledge_base)
+
     docs_processed = split_documents(
                      chunk_size=chunk_size,
                      knowledge_base=raw_knowledge_base,
@@ -103,9 +103,7 @@ def main():
                      plot_path=plot_path,
                      separators=separators
                      )
-    print(docs_processed)
-    print(docs_processed[0])
-    print(len(docs_processed))
+
     embedding_model = init_embedding_model(
                       embedding_model_name=embedding_name,
                       multiprocess=multiprocess,
