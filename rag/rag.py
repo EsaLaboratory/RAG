@@ -145,7 +145,7 @@ def extract_data(
         loader = DirectoryLoader('../data', glob=glob, show_progress=True)
 
     elif test_csv:
-        path = "../data/raw_data/jena_climate_2009_2016.csv"
+        path = "../data/raw_data/jena_climate_small.csv"
         loader = CSVLoader(file_path=path)
 
     else:
