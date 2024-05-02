@@ -292,9 +292,9 @@ def load_faiss(
     if type(path) == list:
         faiss = FAISS.load_local(path[0], embedding_model, allow_dangerous_deserialization=True)
         for path_to_faiss in path[1:]:
-            faiss.merge_from(FAISS.load_local(path_to_faiss, embedding_model))
+            faiss.merge_from(FAISS.load_local(path_to_faiss, embedding_model, allow_dangerous_deserialization=True))
     else:
-        faiss = FAISS.load_local(path, embedding_model)
+        faiss = FAISS.load_local(path, embedding_model, allow_dangerous_deserialization=True)
     return faiss
 
 @timer
