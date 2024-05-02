@@ -57,11 +57,6 @@ def main():
                         type=str,
                         default="../data/faiss/test1/faiss_index",
                         help="Path for local faiss object")
-    parser.add_argument('--encode_kwargs',
-                        metavar='encode_kwargs', 
-                        type=str,
-                        default={"normalize_embeddings": True},
-                        help="Embeding kwargs, format json (optional)")
     parser.add_argument('--num_retrieved_docs', 
                         metavar='num_retrieved_docs', 
                         type=str,
