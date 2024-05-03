@@ -1,6 +1,9 @@
 import argparse
 from datetime import datetime
-from user import *
+import os
+import sys
+sys.path.append(os.path.abspath("./rag/"))
+from rag.user import *
 
 def main():
     "Creation of the optim command"
