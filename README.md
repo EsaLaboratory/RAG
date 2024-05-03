@@ -54,7 +54,7 @@ TODO add folder tree and file description
 
 Several installation are possible. We will describe a simple one.
 
-- After having downloaded the project and having extracted it, go to your terminal and move your working directory to the newly downloaded folder **rag**.
+- After having downloaded the project and having extracted it, go to your terminal and move your working directory to the newly downloaded folder **RAG**.
 
 - Create a python environment with the requirements listed in requirements.txt file:
 ``` bash
