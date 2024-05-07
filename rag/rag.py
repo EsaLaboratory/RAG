@@ -451,13 +451,14 @@ def answer_with_rag(
     """
     
     # Gather documents with retriever
-    print("=> Retrieving documents...")
+    start = time.time()
     relevant_docs = knowledge_index.similarity_search(
                     query=question, 
                     k=num_retrieved_docs
                     )
     relevant_docs = [doc.page_content for doc in relevant_docs]
-
+    end = time.time()
+    print(f"Documents retrieved in {end - start}")
     # Optionally rerank results
     # if reranker:
     #     print("=> Reranking documents...")
@@ -478,7 +479,9 @@ def answer_with_rag(
     final_prompt = rag_prompt_format.format(question=question, context=context)
 
     # Redact an answer
-    print("=> Generating answer...")
+    start = time.time()
     answer = llm(final_prompt)[0]["generated_text"]
+    end = time.time()
+    print(f"Answer generated in {end - start}")
 
     return answer, relevant_docs
