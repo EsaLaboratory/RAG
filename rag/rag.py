@@ -319,7 +319,7 @@ def answer_with_rag(
     docs_encoded = model.encode([doc for doc in train])
     embed_query = np.array([model.encode(question)])
     d = docs_encoded.shape[1]
-    if len(docs_encoded) % 100 > 2:
+    if len(docs_encoded) // 100 > 2:
         nlist = len(docs_encoded)//100
     else:
         nlist = 10
@@ -327,15 +327,15 @@ def answer_with_rag(
     index = faiss.IndexIVFFlat(quantizer, d, nlist)
     index.train(docs_encoded)
     index.add(docs_encoded)
-    distance, index = index.search(np.array([embed_query]), k=num_retrieved_docs)
-    relevant_docs = train[index[0][index[0] != -1]]
+    distance, indexes = index.search(embed_query), k=num_retrieved_docs)
+    relevant_docs = train[indexes[0][indexes[0] != -1]]
     end = time.time()
     print(f"Documents retrieved in {end - start}")
 
     # Build the final prompt
     context = "\nExtracted documents:\n"
     for i, doc in enumerate(relevant_docs):
-        context += "".join([f"Document {str(i)}:::\n" + doc])
+        context += "".join([f"\nDocument {str(i)}:::\n" + doc])
 
     final_prompt = rag_prompt_format.format(question=question, context=context)
 
