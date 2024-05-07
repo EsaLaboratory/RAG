@@ -8,18 +8,14 @@ import pandas as pd
 import faiss
 import matplotlib.pyplot as plt
 from typing import Iterator, Tuple, Optional, Union, Callable, Any
-from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.document_loaders import BaseBlobParser, Blob
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores.utils import DistanceStrategy
 from langchain.docstore.document import Document as LangchainDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline, AutoModelForCausalLM, Pipeline
+from transformers import AutoTokenizer, pipeline, AutoModelForCausalLM, Pipeline
 from sentence_transformers import SentenceTransformer
 import torch
 import numpy as np
@@ -297,7 +293,7 @@ def answer_with_rag(
     data_path: str,
     rag_prompt_format: Union[list[int], dict],
     num_retrieved_docs: int = 30,
-) -> Tuple[str, list[LangchainDocument]]:
+) -> Tuple[str, list[str]]:
     """Agregate the whole pipeline, linking processed document, LLM and query.
 
     Args:
