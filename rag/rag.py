@@ -5,6 +5,7 @@ from urllib.request import urlopen
 import requests
 import time
 import pandas as pd
+import faiss
 import matplotlib.pyplot as plt
 from typing import Iterator, Tuple, Optional, Union, Callable, Any
 from langchain_core.document_loaders import BaseLoader
@@ -19,7 +20,9 @@ from langchain.docstore.document import Document as LangchainDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline, AutoModelForCausalLM, Pipeline
+from sentence_transformers import SentenceTransformer
 import torch
+import numpy as np
 
 # Constants
 SEPARATOR = [
@@ -54,8 +57,6 @@ def timer(func:Callable[[Any], Any])->Callable[[Any], Any]:
             print(f"\nFunction {name}\nargs {arg_str}\nkwargs {key_word}\ndone in :{end - start}")
         return resultat
     return description
-
-READER_MODEL_NAME = "HuggingFaceH4/zephyr-7b-beta"
 class MyParser(BaseBlobParser):
     """A simple parser that creates a document from each line."""
 
@@ -74,7 +75,7 @@ def extract_data(
     path: str = None,
     test_html: bool = False,
     test_csv: bool = False,
-)-> list[LangchainDocument]:
+)-> list[str]:
     """Load data.
     
     Args:
@@ -83,7 +84,7 @@ def extract_data(
         test_csv: A boolean, if True it will load csv test data.
 
     Returns:
-        A list of LangchainDocument objects containing document information.
+        A list of str containing document information.
         Each object has page_content and metadata attributes. For example:
 
         print(raw_knowledge_database[0].page_content)
@@ -151,18 +152,15 @@ def extract_data(
     else:
         raise ValueError("No path where given")
 
-    # Storing data into langchain format
     data = loader.load()
-    raw_knowledge_database = [
-        LangchainDocument(page_content=doc.page_content, metadata=doc.metadata)
-        for doc in data
-    ]
+    raw_knowledge_database = [doc.page_content for doc in data]
     return raw_knowledge_database
 
 @timer
 def split_documents(
     chunk_size: int,
-    knowledge_base: list[LangchainDocument],
+    data_path: str,
+    knowledge_base: list[str],
     tokenizer_name: Optional[str] = "thenlper/gte-small",
     plot_path: Optional[str] = None,
     separators: Optional[list[str]] = SEPARATOR
@@ -199,108 +197,27 @@ def split_documents(
     unique_texts = {}
     docs_processed_unique = []
     for doc in docs_processed:
-        if doc.page_content not in unique_texts:
-            unique_texts[doc.page_content] = True
+        if doc not in unique_texts:
+            unique_texts[doc] = True
             docs_processed_unique.append(doc)
+    
+    np.save(data_path, docs_processed_unique)
 
     if plot_path is not None:
         # Let's visualize the chunk sizes
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         lengths = []
         for doc in docs_processed:
-            lengths.append(len(tokenizer.encode(doc.page_content)))
+            lengths.append(len(tokenizer.encode(doc)))
         fig = pd.Series(lengths).hist()
         plt.title("Document lengths in the knowledge base in tokens")
         plt.savefig(plot_path)
     return docs_processed_unique
 
 @timer
-def init_embedding_model(
-    embedding_model_name: Optional[str] = "thenlper/gte-small",
-    multiprocess: Optional[bool] = True,
-    model_kwargs: Optional[dict] = {"device": "cpu"}, # gpu 
-    encode_kwargs: Optional[dict] = {"normalize_embeddings": True},
-    save_path: Optional[str] = None,
-) -> HuggingFaceEmbeddings:
-    """Initialize an embedding model.
-    
-    Args:
-        embedding_model_name: A string that refers to an embedding model.
-        multiprocess: A boolean that defines multiprocessing parameter.
-        model_kwargs: A dict containing device settings.
-        encode_kwargs: A dict containing encoding settings.
-        save_path: A string that is a save path for the loaded embedding model.
-        
-    Returns:
-        An embedding model that will convert text into tokens.
-    """
-    # model_kwargs['quantization_config'] = BitsAndBytesConfig(
-    #              load_in_4bit=True,
-    #              bnb_4bit_use_double_quant=True,
-    #              bnb_4bit_quant_type="nf4",
-    #              bnb_4bit_compute_dtype=torch.bfloat16,
-    #              )
-    embedding_model = HuggingFaceEmbeddings(
-                      model_name=embedding_model_name,
-                      multi_process=multiprocess,
-                      model_kwargs=model_kwargs,
-                      encode_kwargs=encode_kwargs,
-                      cache_folder=save_path,
-                      )
-    return embedding_model
-
-@timer
-def create_faiss(
-    embedding_model: HuggingFaceEmbeddings,
-    docs_processed: list[LangchainDocument],
-    save_path: str
-) -> FAISS:
-    """Create and save the retrieving database.
-    
-    Args:
-        embedding_model: An embedding model adapted the processed documents.
-        docs_processed: List of processed chunked data.
-        save_path: A string refering to a saving path.
-
-    Returns:
-        A FAISS object assimilited as a database that we will query.
-    """
-    KNOWLEDGE_VECTOR_DATABASE = FAISS.from_documents(
-                                docs_processed,
-                                embedding_model,
-                                distance_strategy=DistanceStrategy.COSINE,
-                                )
-    KNOWLEDGE_VECTOR_DATABASE.save_local(save_path)
-    return KNOWLEDGE_VECTOR_DATABASE
-
-@timer
-def load_faiss(
-    path: Union[str, list[str]],
-    embedding_model: HuggingFaceEmbeddings
-) -> FAISS:
-    """Load faiss object.
-
-    When several path are given, it merges all faiss object into one.
-
-    Args:
-        path: A string or list of string refering to a local FAISS object.
-        embedding_model: A string refering to a LLM name.
-    
-    Returns:
-        A FAISS object assimilited as a database that we will query.
-    """
-    if type(path) == list:
-        faiss = FAISS.load_local(path[0], embedding_model, allow_dangerous_deserialization=True)
-        for path_to_faiss in path[1:]:
-            faiss.merge_from(FAISS.load_local(path_to_faiss, embedding_model, allow_dangerous_deserialization=True))
-    else:
-        faiss = FAISS.load_local(path, embedding_model, allow_dangerous_deserialization=True)
-    return faiss
-
-@timer
 def init_pipeline(
-    model_path: Optional[str] = READER_MODEL_NAME,
-    tokenizer_path: Optional[str] = READER_MODEL_NAME,
+    model_path: Optional[str] = "HuggingFaceH4/zephyr-7b-beta",
+    tokenizer_path: Optional[str] = "HuggingFaceH4/zephyr-7b-beta",
     save_path: Optional[str] = None
 ) -> pipeline:
     """Initialize LLM pipeline
@@ -314,17 +231,8 @@ def init_pipeline(
         A LLM pipeline for text generation.
         A tokenizer adapted to this LLM.
     """
-    # FIXME
-    # bnb_config = BitsAndBytesConfig(
-    #             load_in_4bit=True,
-    #             bnb_4bit_use_double_quant=True,
-    #             bnb_4bit_quant_type="nf4",
-    #             bnb_4bit_compute_dtype=torch.bfloat16,
-    #             )
-
     model = AutoModelForCausalLM.from_pretrained(
             pretrained_model_name_or_path=model_path, 
-            # quantization_config=bnb_config
             )
     tokenizer = AutoTokenizer.from_pretrained(
                 pretrained_model_name_or_path=tokenizer_path
@@ -382,54 +290,13 @@ def prompt_format(tokenizer: AutoTokenizer) -> Union[list[int], dict]:
         prompt_in_chat_format, tokenize=False, add_generation_prompt=True
     )
 
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_current_weather",
-            "description": "Get the current weather in a given location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "the city e.g. London",
-                    },
-                    "unit": {
-                        "type": "string", 
-                        "enum": ["celsius", "kelvin"]},
-                },
-                "required": ["location"],
-            },
-        },   
-    }
-]
-
-
-# def init_reranker(name: Optional[str] = "colbert-ir/colbertv2.0"
-#     ) -> RAGPretrainedModel:
-#     """Initialize a reranker.
-    
-#     A reranker allow to retrieve more documents and to order them well.
-#     Colbertv2 computes good interactions between query and documents.
-
-#     Args:
-#         name: A string that refers to reranker model.
-
-#     Returns:
-#         A reranker object. 
-#     """
-#     return RAGPretrainedModel.from_pretrained(name)
-
 @timer
 def answer_with_rag(
     question: str,
     llm: Pipeline,
-    knowledge_index: FAISS,
+    data_path: str,
     rag_prompt_format: Union[list[int], dict],
-    # reranker: Optional[RAGPretrainedModel] = None,
     num_retrieved_docs: int = 30,
-    num_docs_final: int = 24,
 ) -> Tuple[str, list[LangchainDocument]]:
     """Agregate the whole pipeline, linking processed document, LLM and query.
 
@@ -439,9 +306,7 @@ def answer_with_rag(
         knowledge_index: A processed document database.
         rag_prompt_format: A prompt format apply to the LLM's response.
         reranker: A reranker that will rank each chunck.
-        num_retrieved_docs: A integer specifying max number of retrieved docs.
-        num_docs_final: A integer specifying max number of context docs.
-    
+        num_retrieved_docs: A integer specifying max number of retrieved docs.    
     Returns:
         A LLM's answer to a givne query based on a context extracted with RAG.
         The most meaningful documents given a query.
@@ -449,27 +314,21 @@ def answer_with_rag(
         example:
             TODO ADD EXAMPLE
     """
-    
     # Gather documents with retriever
     start = time.time()
-    relevant_docs = knowledge_index.similarity_search(
-                    query=question, 
-                    k=num_retrieved_docs
-                    )
-    relevant_docs = [doc.page_content for doc in relevant_docs]
+    train = np.load(data_path)
+    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    docs_encoded = model.encode([doc.page_content for doc in train])
+    embed_query = np.array([model.encode(question)])
+    d = docs_encoded.shape[1]
+    quantizer = faiss.IndexFlatL2(d)
+    index = faiss.IndexIVFFlat(quantizer, d, len(train)/100)
+    index.train(train)
+    index.add(train)
+    distance, index = index.search(np.array([embed_query]), k=num_retrieved_docs)
+    relevant_docs = train[index[0]]
     end = time.time()
     print(f"Documents retrieved in {end - start}")
-    # Optionally rerank results
-    # if reranker:
-    #     print("=> Reranking documents...")
-    #     relevant_docs = reranker.rerank(
-    #                     question, 
-    #                     relevant_docs, 
-    #                     k=num_docs_final
-    #                     )
-    #     relevant_docs = [doc["content"] for doc in relevant_docs]
-
-    relevant_docs = relevant_docs[:num_docs_final]
 
     # Build the final prompt
     context = "\nExtracted documents:\n"
