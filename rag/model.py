@@ -55,8 +55,6 @@ def main():
 
     rag_prompt_format = prompt_format(tokenizer=tokenizer)
 
-    # reranker = init_reranker(name=reranker_name)
-
     output = answer_with_rag(question=question,
                              llm=reader_llm,
                              data_path=data_path,

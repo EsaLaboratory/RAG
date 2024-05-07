@@ -316,7 +316,7 @@ def answer_with_rag(
     start = time.time()
     train = np.load(data_path)
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-    docs_encoded = model.encode([doc.page_content for doc in train])
+    docs_encoded = model.encode([doc for doc in train])
     embed_query = np.array([model.encode(question)])
     d = docs_encoded.shape[1]
     quantizer = faiss.IndexFlatL2(d)
@@ -324,7 +324,7 @@ def answer_with_rag(
     index.train(train)
     index.add(train)
     distance, index = index.search(np.array([embed_query]), k=num_retrieved_docs)
-    relevant_docs = train[index[0]]
+    relevant_docs = train[index[0][index[0] != -1]]
     end = time.time()
     print(f"Documents retrieved in {end - start}")
 
