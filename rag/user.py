@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import picos as pc
 import datetime
 from datetime import timedelta
-from typing import Iterator, Tuple, Optional, Union, Callable, Any
+from typing import Callable, Any
 import time
 
 def timer(func:Callable[[Any], Any])->Callable[[Any], Any]:

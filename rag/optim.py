@@ -1,8 +1,8 @@
 import argparse
 from datetime import datetime
-import os
-import sys
-sys.path.append(os.path.abspath("./rag/"))
+# import os
+# import sys
+# sys.path.append(os.path.abspath("./rag/"))
 from rag.user import *
 
 def main():

@@ -299,8 +299,8 @@ def load_faiss(
 
 @timer
 def init_pipeline(
-    model_path: Optional[str] = None,
-    tokenizer_path: Optional[str] = None,
+    model_path: Optional[str] = READER_MODEL_NAME,
+    tokenizer_path: Optional[str] = READER_MODEL_NAME,
     save_path: Optional[str] = None
 ) -> pipeline:
     """Initialize LLM pipeline
@@ -322,21 +322,14 @@ def init_pipeline(
     #             bnb_4bit_compute_dtype=torch.bfloat16,
     #             )
 
-    if model_path is not None and tokenizer_path is not None:
-        model = AutoModelForCausalLM.from_pretrained(
-                pretrained_model_name_or_path=model_path, 
-                # quantization_config=bnb_config
+    model = AutoModelForCausalLM.from_pretrained(
+            pretrained_model_name_or_path=model_path, 
+            # quantization_config=bnb_config
+            )
+    tokenizer = AutoTokenizer.from_pretrained(
+                pretrained_model_name_or_path=tokenizer_path
                 )
-        tokenizer = AutoTokenizer.from_pretrained(
-                    pretrained_model_name_or_path=tokenizer_path
-                    )
-    else:
-        model = AutoModelForCausalLM.from_pretrained(
-                READER_MODEL_NAME,
-                # quantization_config=bnb_config
-                )
-        tokenizer = AutoTokenizer.from_pretrained(READER_MODEL_NAME)
-    
+
     if save_path is not None:
         model.save_pretrained(save_path)
         tokenizer.save_pretrained(save_path)
@@ -349,7 +342,7 @@ def init_pipeline(
                  temperature=0.2,
                  repetition_penalty=1.1,
                  return_full_text=False,
-                 max_new_tokens=500,
+                 max_new_tokens=512,
                  )
     return READER_LLM, tokenizer
 
