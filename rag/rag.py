@@ -319,8 +319,12 @@ def answer_with_rag(
     docs_encoded = model.encode([doc for doc in train])
     embed_query = np.array([model.encode(question)])
     d = docs_encoded.shape[1]
+    if len(train) % 100 > 2:
+        nlist = len(train)//100
+    else:
+        nlist = 10
     quantizer = faiss.IndexFlatL2(d)
-    index = faiss.IndexIVFFlat(quantizer, d, len(train)/100)
+    index = faiss.IndexIVFFlat(quantizer, d, nlist)
     index.train(train)
     index.add(train)
     distance, index = index.search(np.array([embed_query]), k=num_retrieved_docs)
