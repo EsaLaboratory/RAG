@@ -195,9 +195,9 @@ def split_documents(
     unique_texts = {}
     docs_processed_unique = []
     for doc in docs_processed:
-        if doc not in unique_texts:
-            unique_texts[doc] = True
-            docs_processed_unique.append(doc)
+        if doc.page_content not in unique_texts:
+            unique_texts[doc.page_content] = True
+            docs_processed_unique.append(doc.page_content)
     
     np.save(data_path, docs_processed_unique)
 
