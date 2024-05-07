@@ -327,7 +327,8 @@ def answer_with_rag(
     index = faiss.IndexIVFFlat(quantizer, d, nlist)
     index.train(docs_encoded)
     index.add(docs_encoded)
-    distance, indexes = index.search(embed_query), k=num_retrieved_docs)
+    index.nprobe = 5
+    distance, indexes = index.search(embed_query, k=num_retrieved_docs)
     relevant_docs = train[indexes[0][indexes[0] != -1]]
     end = time.time()
     print(f"Documents retrieved in {end - start}")
