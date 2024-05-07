@@ -71,7 +71,7 @@ def extract_data(
     path: str = None,
     test_html: bool = False,
     test_csv: bool = False,
-)-> list[str]:
+)-> list[LangchainDocument]:
     """Load data.
     
     Args:
@@ -149,18 +149,20 @@ def extract_data(
         raise ValueError("No path where given")
 
     data = loader.load()
-    raw_knowledge_database = [doc.page_content for doc in data]
+    raw_knowledge_database = [
+        LangchainDocument(page_content=doc.page_content, metadata=doc.metadata) for doc in data
+    ]
     return raw_knowledge_database
 
 @timer
 def split_documents(
     chunk_size: int,
     data_path: str,
-    knowledge_base: list[str],
+    knowledge_base: list[LangchainDocument],
     tokenizer_name: Optional[str] = "thenlper/gte-small",
     plot_path: Optional[str] = None,
     separators: Optional[list[str]] = SEPARATOR
-) -> list[LangchainDocument]:
+) -> list[str]:
     """Split documents into chunks and return a list of documents.
     
     The function uses a hierarchical list of separators for splitting documents.
