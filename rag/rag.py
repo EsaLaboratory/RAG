@@ -231,6 +231,8 @@ def init_pipeline(
     """
     model = AutoModelForCausalLM.from_pretrained(
             pretrained_model_name_or_path=model_path, 
+            torch_dtype=torch.bfloat16, 
+            device_map="auto",
             )
     tokenizer = AutoTokenizer.from_pretrained(
                 pretrained_model_name_or_path=tokenizer_path
@@ -248,7 +250,7 @@ def init_pipeline(
                  temperature=0.2,
                  repetition_penalty=1.1,
                  return_full_text=False,
-                 max_new_tokens=512,
+                 max_new_tokens=128,
                  )
     return READER_LLM, tokenizer
 
@@ -294,7 +296,7 @@ def answer_with_rag(
     llm: Pipeline,
     data_path: str,
     rag_prompt_format: Union[list[int], dict],
-    num_retrieved_docs: int = 30,
+    num_retrieved_docs: int = 24,
 ) -> Tuple[str, list[str]]:
     """Agregate the whole pipeline, linking processed document, LLM and query.
 
