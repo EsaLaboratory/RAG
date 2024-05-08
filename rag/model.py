@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--question', 
                         metavar='question', 
                         type=str,
-                        default="Give me the temperature evolution on the 26 December of 2016 every hour.",
+                        default="Return a python list of the temperature on the 26 December of 2016 every hour.",
                         help="question on data for llm")
     parser.add_argument('--data_path', 
                         metavar='data_path', 

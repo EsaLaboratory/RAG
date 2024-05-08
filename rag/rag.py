@@ -308,7 +308,7 @@ def answer_with_rag(
         reranker: A reranker that will rank each chunck.
         num_retrieved_docs: A integer specifying max number of retrieved docs.    
     Returns:
-        A LLM's answer to a givne query based on a context extracted with RAG.
+        A LLM's answer to a given query based on a context extracted with RAG.
         The most meaningful documents given a query.
 
         example:
@@ -333,7 +333,7 @@ def answer_with_rag(
     distance, indexes = index.search(embed_query, k=num_retrieved_docs)
     relevant_docs = train[indexes[0][indexes[0] != -1]]
     end = time.time()
-    print(f"Documents retrieved in {end - start}")
+    print(f"\nDocuments retrieved in :{end - start}")
 
     # Build the final prompt
     context = "\nExtracted documents:\n"
@@ -346,6 +346,6 @@ def answer_with_rag(
     start = time.time()
     answer = llm(final_prompt)[0]["generated_text"]
     end = time.time()
-    print(f"Answer generated in {end - start}")
+    print(f"Answer generated in :{end - start}")
 
     return answer, relevant_docs
