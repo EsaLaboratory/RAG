@@ -27,6 +27,7 @@ def timer(func:Callable[[Any], Any])->Callable[[Any], Any]:
             print(f"\nFunction {name}\nargs {arg_str}\nkwargs {key_word}\ndone in :{end - start}")
         return resultat
     return description
+
 class Market():
     """This class describes a basic electricity market.
 
@@ -117,13 +118,13 @@ class Model():
         market: object containing electricity price evolution.
         EV_energy_goal: fully charged car J.
         V: volume of the house m^3.
+        surface: surface of walls
         P: pressure of the room kPa.
         max_power: maximum usable power W.
         min_power: minimum usable power W.
         cv: heat capacity kJ/(kg.K).
-        k: thermal conductivity W/(m·K).
-        s: wall thickness m;
-        R: ideal gas constant kJ/(kg.K).
+        Rh: heat transfer resistance m^2.K/W.
+        R: specific ideal gas constant kPa.m^3/(kg.K).
         T0: initial temperature K.
         T_outside: outside temperature K.
         power_t: power consumption for house temperature W.
@@ -144,19 +145,21 @@ class Model():
         self.Tmax = Tmax
         self.market = market
         self.T_outside = weather_forecast
-        self.EV_energy_goal = 144000000 * self.EV / 3600000
+        self.EV_energy_goal = 144000000 * self.EV / 3600000 # 40 kwh per car
         self.V = 50
+        self.surface = 10
         self.P = 100
-        self.max_power = 150
-        self.min_power = 10
-        self.cv = 0.718
+        self.max_power = 10
+        self.min_power = 0
+        self.cv = 0.717
         self.R = 0.287
-        self.k = 0.92
-        self.s = 0.3
+        self.Rh = 1.4345
         self.T0 = (Tmax + Tmin) / 2
         self.power_t = pc.RealVariable("power_t", self.market.N)
         self.power_e = pc.RealVariable("power_e", self.market.N)
-        self.power = self.power_e + self.power_t
+        self.power_h = np.random.random(self.market.N)
+        self.power_h = 12 * self.power_h / np.sum(self.power_h)
+        self.power = self.power_e + self.power_t + self.power_h
         self.energy = pc.RealVariable("energy", self.market.N+1)
         self.temperature = pc.RealVariable("temperature", self.market.N+1)
         self.cost = 0
@@ -226,7 +229,7 @@ class Model():
         We define the constraints and the function to optimize then we optmize.
         """
         cost = 0
-        K = self.T0 * self.R * self.market.dt * 1000 / (self.P * self.V * self.cv)
+        K = self.T0 * self.R * self.market.dt * 3600 / (self.P * self.V * self.cv)
         problem = pc.Problem()
         for i in range(self.market.N):
             # we can only charge the vehicule if it is in the house
@@ -239,7 +242,7 @@ class Model():
             problem += self.power_t[i] >= self.min_power
             # evolution rule for temperature and energy storage
             problem += self.energy[i + 1] == self.power_e[i] * self.market.dt + self.energy[i]
-            problem += self.temperature[i + 1] == K * (self.power_t[i] - 4 * (self.market.dt * self.k * (self.T0 - self.T_outside[i]))/self.s) + self.temperature[i]
+            problem += self.temperature[i + 1] == K * (self.power_t[i] - 4 * (self.surface * (self.temperature[i] - self.T_outside[i]))/(1000*self.Rh)) + self.temperature[i]
             # temperature must be between Tmin and Tmax
             problem += self.temperature[i + 1] <= self.Tmax, self.temperature[i + 1] >= self.Tmin
             # power must be between min_power and max_power
@@ -248,7 +251,7 @@ class Model():
             cost += (self.power_t[i] + self.power_e[i]) * self.market.prices[i]
 
         # At t0 the temperature must be equal to T0 and the car has no energy left at t0. At the end the car is full.
-        problem += self.temperature[0] == self.T0, self.energy[0] == 0, self.energy[-1] >= self.EV_energy_goal
+        problem += self.temperature[0] == self.T0, self.energy[0] == 0, self.energy[-1] >= self.EV_energy_goal, self.temperature[-1] == self.T0
         problem.minimize = cost
         problem.solve(solver="cvxopt")
         self.cost = problem.value
@@ -257,7 +260,7 @@ class Model():
         """Display a graphical result of the optimization."""
         fig, ax = plt.subplots(4, 1)
         fig.set_size_inches((10, 5))
-        fig.suptitle(f"Total cost {round(self.cost,0)}")
+        fig.suptitle(f"Total cost {round(self.cost,0)} in p")
         # Shrink current axis by 20%
         for axe in ax:
             box = axe.get_position()
@@ -269,7 +272,7 @@ class Model():
         # Plot price evolution
         ax[0].plot(self.market.prices)
         ax[0].set_xticks([])
-        ax[0].set_ylabel(r"$Price$", fontsize=8)
+        ax[0].set_ylabel(r"$Price \quad p$", fontsize=8)
 
         # Plot power consumption
         ax[1].plot(self.power.value)

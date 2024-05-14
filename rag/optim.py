@@ -1,9 +1,10 @@
 import argparse
 from datetime import datetime
+import numpy as np
 # import os
 # import sys
 # sys.path.append(os.path.abspath("./rag/"))
-from rag.user import *
+from user import Market, Model, tests
 
 def main():
     "Creation of the optim command"
@@ -96,7 +97,7 @@ def main():
     
     model_kwargs = {
         'EV' : EV, 
-        'date' : datetime.datetime.strptime(date, "%d/%m/%y %H:%M:%S.%f"),
+        'date' : datetime.strptime(date, "%d/%m/%y %H:%M:%S.%f"),
         'departure_time' : departure_time,
         'arrival_time' : arrival_time,
         'Tmin' : Tmin,
